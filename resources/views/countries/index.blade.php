@@ -8,79 +8,77 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #f8f9fa; }
-        .table-container { background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        body { background-color: #f4f6f9; }
+        .main-card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .table th { background-color: #212529; color: #fff; border: none; }
+        .table td { vertical-align: middle; }
     </style>
 </head>
 <body>
 
 <div class="container py-5">
-    <div class="table-container">
+    <div class="card main-card p-4 bg-white">
         <!-- Header Halaman -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="fw-bold text-dark m-0">Daftar Negara</h2>
+                <h1 class="fw-bold text-dark m-0">Daftar Negara</h1>
                 <p class="text-muted m-0">Kelola wilayah operasional supply chain global</p>
             </div>
-            <!-- Tombol Tambah Negara Baru -->
-            <a href="/countries/create" class="btn btn-primary">
+            <!-- Menggunakan URL manual agar tidak memicu RouteNotFoundException -->
+            <a href="/countries/create" class="btn btn-primary fw-semibold px-4 py-2">
                 <i class="fa-solid fa-plus me-1"></i> Tambah Negara
             </a>
         </div>
 
-        <!-- Alert Sukses (Jika ada flash message dari controller) -->
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
         <!-- Tabel Data Negara -->
         <div class="table-responsive">
-            <table class="table table-hover table-bordered align-middle">
-                <thead class="table-dark">
+            <table class="table table-hover table-striped align-middle border">
+                <thead>
                     <tr>
-                        <th width="8%" class="text-center">ID</th>
+                        <th class="text-center" style="width: 80px;">ID</th>
                         <th>Nama Negara</th>
-                        <th width="35%" class="text-center">Aksi / Fitur</th>
+                        <th class="text-center" style="width: 450px;">Aksi / Fitur</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($countries as $country)
                         <tr>
-                            <td class="text-center fw-semibold">{{ $country->id }}</td>
-                            <td>
-                                <!-- Mendukung berbagai opsi nama kolom lokal di database kamu -->
-                                {{ $country->name ?? $country->country_name ?? $country->nama ?? 'Nama tidak terdefinisi' }}
-                            </td>
+                            <td class="text-center fw-bold text-muted">{{ $country->id }}</td>
+                            
+                            <!-- Menampilkan nama kolom database lokal asli -->
+                            <td class="fw-semibold text-dark">{{ $country->country_name ?? 'Nama tidak terdefinisi' }}</td>
+                            
                             <td class="text-center">
-                                <!-- FITUR TERBARU: Tombol Analisis Berita & Sentimen API GNews -->
-                                <a href="{{ route('countries.news', $country->id) }}" class="btn btn-info btn-sm text-white me-1">
-                                    <i class="fa-solid fa-newspaper"></i> Analisis Berita
-                                </a>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <!-- Fitur #1: Dashboard Intelijen -->
+                                    <a href="{{ route('countries.dashboard', $country->id) }}" class="btn btn-primary btn-sm px-3">
+                                        <i class="fa-solid fa-chart-pie me-1"></i> View Profile
+                                    </a>
 
-                                <!-- Tombol Aksi Standar (Edit) -->
-                                <a href="/countries/{{ $country->id }}/edit" class="btn btn-warning btn-sm text-dark me-1">
-                                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                                </a>
+                                    <!-- Fitur #5: Analisis Berita Sentimen -->
+                                    <a href="{{ route('countries.news', $country->id) }}" class="btn btn-info text-white btn-sm px-3">
+                                        <i class="fa-solid fa-newspaper me-1"></i> Analisis Berita
+                                    </a>
 
-                                <!-- Tombol Aksi Standar (Delete) -->
-                                <form action="/countries/{{ $country->id }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus negara ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="fa-solid fa-trash"></i> Hapus
-                                    </button>
-                                </form>
+                                    <!-- Tombol Edit dengan path URL manual -->
+                                    <a href="/countries/{{ $country->id }}/edit" class="btn btn-warning btn-sm text-dark px-3">
+                                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit
+                                    </a>
+
+                                    <!-- Tombol Hapus dengan path URL manual -->
+                                    <form action="/countries/{{ $country->id }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus negara ini?');" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm px-3">
+                                            <i class="fa-solid fa-trash me-1"></i> Hapus
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="text-center py-4 text-muted">
-                                <i class="fa-regular fa-folder-open mb-2" style="font-size: 2rem;"></i>
-                                <br>Belum ada data negara di database.
-                            </td>
+                            <td colspan="3" class="text-center text-muted py-4">Belum ada data negara yang terdaftar.</td>
                         </tr>
                     @endforelse
                 </tbody>

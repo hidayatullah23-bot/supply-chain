@@ -1,23 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\NewsController;
+use App\Http\Controllers\Api\CountryController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Web Routes - Supply Chain Management (Countries Module)
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
-// Route bawaan welcome page
-Route::get('/', function () {
-    return view('welcome');
-});
+// Alur Utama & CRUD Manual
+Route::get('/countries', [CountryController::class, 'index']);
+Route::get('/countries/create', [CountryController::class, 'create']);
+Route::post('/countries', [CountryController::class, 'store']);
 
-// Route Baru: Menampilkan halaman analisis sentimen berita berdasarkan negara
-Route::get('/countries/{id}/news', [NewsController::class, 'showNewsPage'])->name('countries.news');
+// Fitur Intelijen API & Data Science
+Route::get('/countries/{id}/dashboard', [CountryController::class, 'dashboard'])->name('countries.dashboard');
+Route::get('/countries/{id}/news', [CountryController::class, 'news'])->name('countries.news');
+
+// Catatan: Jika kamu masih membutuhkan rute Edit & Hapus bawaan rute manualmu nanti, 
+// kamu bisa menambahkannya di sini setelah form tambah berhasil diselesaikan.

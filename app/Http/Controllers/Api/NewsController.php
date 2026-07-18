@@ -10,6 +10,9 @@ use Carbon\Carbon;
 
 class NewsController extends Controller
 {
+    /**
+     * Mengambil dan menganalisis berita via API (Output: JSON)
+     */
     public function getAnalyzedNews($country_id)
     {
         // 1. Ambil data negara berdasarkan ID
@@ -30,10 +33,11 @@ class NewsController extends Controller
             ->get();
 
         if ($cachedNews->isNotEmpty()) {
+            // Ubah collection menjadi array agar formatnya sama dengan data API
             return response()->json([
                 'status' => 'success',
                 'source' => 'cache',
-                'data' => $cachedNews
+                'data' => $cachedNews->toArray()
             ]);
         }
 
@@ -64,7 +68,7 @@ class NewsController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Gagal mengambil berita dari API GNews.',
-                'error_detail' => $response->json() // Menampilkan alasan detail dari server GNews
+                'error_detail' => $response->json()
             ], 500);
         }
 
@@ -123,6 +127,32 @@ class NewsController extends Controller
             'status' => 'success',
             'source' => 'api',
             'data' => $savedArticles
+        ]);
+    }
+
+    /**
+     * Menampilkan data berita ke halaman View Blade HTML
+     */
+    public function showNewsPage($country_id)
+    {
+        // Memanggil fungsi getAnalyzedNews yang sudah kita buat sebelumnya
+        $response = $this->getAnalyzedNews($country_id);
+        $result = json_decode($response->getContent(), true);
+
+        $country = DB::table('countries')->where('id', $country_id)->first();
+
+        // Memastikan nama negara terisi ke objek agar tidak tertulis "Tidak Diketahui"
+        if ($country) {
+            $country->name = $country->name ?? $country->country_name ?? $country->nama ?? 'Indonesia';
+        }
+
+        // Perbaikan di sini: Ambil array data berita dari $result['data']
+        $newsData = (isset($result['status']) && $result['status'] === 'success') ? $result['data'] : [];
+
+        return view('countries.show_news', [
+            'country' => $country,
+            'newsData' => $newsData,
+            'errorMessage' => (isset($result['status']) && $result['status'] === 'error') ? $result['message'] : null
         ]);
     }
 }

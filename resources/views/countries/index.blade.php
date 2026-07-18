@@ -3,52 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Negara - Supply Chain</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Daftar Negara - Supply Chain Management</title>
+    <!-- Bootstrap 5 & FontAwesome CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .table-container { background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body>
 
-<!-- MENU NAVIGASI UTAMA -->
-<nav class="bg-slate-900 p-4 text-white shadow mb-8">
-    <div class="max-w-7xl mx-auto flex gap-6 font-medium">
-        <a href="{{ route('countries.index') }}" class="text-blue-400 border-b-2 border-blue-400 pb-1">🌍 Data Negara</a>
-        <a href="{{ route('suppliers.index') }}" class="hover:text-blue-400 transition pb-1">🏭 Data Supplier</a>
-        <a href="{{ route('warehouses.index') }}" class="hover:text-blue-400 transition pb-1">🏠 Data Gudang</a>
-    </div>
-</nav>
+<div class="container py-5">
+    <div class="table-container">
+        <!-- Header Halaman -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark m-0">Daftar Negara</h2>
+                <p class="text-muted m-0">Kelola wilayah operasional supply chain global</p>
+            </div>
+            <!-- Tombol Tambah Negara Baru -->
+            <a href="/countries/create" class="btn btn-primary">
+                <i class="fa-solid fa-plus me-1"></i> Tambah Negara
+            </a>
+        </div>
 
-<div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md mb-8">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">🌍 Daftar Negara (Countries)</h1>
+        <!-- Alert Sukses (Jika ada flash message dari controller) -->
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200">
-            <thead>
-                <tr class="bg-slate-800 text-white text-left text-sm font-semibold">
-                    <th class="py-3 px-4 border">No</th>
-                    <th class="py-3 px-4 border">Kode Negara</th>
-                    <th class="py-3 px-4 border">Nama Negara</th>
-                </tr>
-            </thead>
-            <tbody class="text-gray-700 text-sm">
-                @forelse($countries as $index => $country)
-                <tr class="hover:bg-gray-50 transition border-b">
-                    <td class="py-3 px-4 border font-medium">{{ $countries->firstItem() + $index }}</td>
-                    <td class="py-3 px-4 border font-mono font-bold text-blue-600">{{ $country->country_code }}</td>
-                    <td class="py-3 px-4 border font-semibold">{{ $country->country_name }}</td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="3" class="py-6 text-center text-gray-500">Tidak ada data negara.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+        <!-- Tabel Data Negara -->
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th width="8%" class="text-center">ID</th>
+                        <th>Nama Negara</th>
+                        <th width="35%" class="text-center">Aksi / Fitur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($countries as $country)
+                        <tr>
+                            <td class="text-center fw-semibold">{{ $country->id }}</td>
+                            <td>
+                                <!-- Mendukung berbagai opsi nama kolom lokal di database kamu -->
+                                {{ $country->name ?? $country->country_name ?? $country->nama ?? 'Nama tidak terdefinisi' }}
+                            </td>
+                            <td class="text-center">
+                                <!-- FITUR TERBARU: Tombol Analisis Berita & Sentimen API GNews -->
+                                <a href="{{ route('countries.news', $country->id) }}" class="btn btn-info btn-sm text-white me-1">
+                                    <i class="fa-solid fa-newspaper"></i> Analisis Berita
+                                </a>
 
-    <div class="mt-6">
-        {{ $countries->links() }}
+                                <!-- Tombol Aksi Standar (Edit) -->
+                                <a href="/countries/{{ $country->id }}/edit" class="btn btn-warning btn-sm text-dark me-1">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                                </a>
+
+                                <!-- Tombol Aksi Standar (Delete) -->
+                                <form action="/countries/{{ $country->id }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus negara ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fa-solid fa-trash"></i> Hapus
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="text-center py-4 text-muted">
+                                <i class="fa-regular fa-folder-open mb-2" style="font-size: 2rem;"></i>
+                                <br>Belum ada data negara di database.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

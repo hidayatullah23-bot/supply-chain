@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Country;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CountrySeeder extends Seeder
 {
@@ -12,8 +14,15 @@ class CountrySeeder extends Seeder
      */
     public function run(): void
     {
-        // Kosongkan tabel agar tidak dobel/menumpuk
+        // Matikan foreign key check sementara agar truncate bisa berjalan
+        Schema::disableForeignKeyConstraints();
+
+        // Kosongkan tabel terkait berita cache dan countries agar bersih total
+        DB::table('news_cache')->truncate();
         Country::truncate();
+
+        // Nyalakan kembali foreign key check
+        Schema::enableForeignKeyConstraints();
 
         $countries = [
             // --- ASIA ---
@@ -100,26 +109,22 @@ class CountrySeeder extends Seeder
             ['country_name' => 'Papua New Guinea', 'country_code' => 'PG', 'capital' => 'Port Moresby', 'currency' => 'PGK', 'region' => 'Oceania', 'population' => 10100000],
         ];
 
-        // Loop untuk generate otomatis sampai 250 data negara simulasi
         $regions = ['Asia', 'Europe', 'Americas', 'Africa', 'Oceania', 'Middle East'];
         $currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CNY', 'IDR'];
 
-        // Ambil data asli di atas sebagai pondasi dasar
         foreach ($countries as $country) {
             Country::create($country);
         }
 
-        // Tambah sisanya menggunakan looping dengan nama negara asli acak (Faker)
         $faker = \Faker\Factory::create();
         $countExisted = count($countries);
         
         for ($i = $countExisted + 1; $i <= 250; $i++) {
-            // Kita generate kode negara yang dijamin unik menggunakan nomor urut indeks, contoh: C101, C102, dst.
             $uniqueCode = 'C' . $i;
 
             Country::create([
-                'country_name' => $faker->unique()->country, // Nama negaranya tetap unik asli dari Faker
-                'country_code' => $uniqueCode,               // Kode negara unik buatan sendiri agar tidak bentrok
+                'country_name' => $faker->unique()->country,
+                'country_code' => $uniqueCode,
                 'capital'      => $faker->city,
                 'currency'     => $currencies[array_rand($currencies)],
                 'region'       => $regions[array_rand($regions)],

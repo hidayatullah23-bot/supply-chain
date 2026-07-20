@@ -13,7 +13,7 @@ class NewsController extends Controller
     /**
      * Mengambil dan menganalisis berita via API (Output: JSON)
      */
-    public function getAnalyzedNews($country_id)
+    public function getAnalyzedNews(Request $request, $country_id)
     {
         // 1. Ambil data negara berdasarkan ID
         $country = DB::table('countries')->where('id', $country_id)->first();
@@ -135,8 +135,9 @@ class NewsController extends Controller
      */
     public function showNewsPage($country_id)
     {
-        // Memanggil fungsi getAnalyzedNews yang sudah kita buat sebelumnya
-        $response = $this->getAnalyzedNews($country_id);
+        // Membuat Request tiruan untuk dikirimkan ke getAnalyzedNews
+        $request = Request::create('/api/news/' . $country_id, 'GET');
+        $response = $this->getAnalyzedNews($request, $country_id);
         $result = json_decode($response->getContent(), true);
 
         $country = DB::table('countries')->where('id', $country_id)->first();
@@ -146,7 +147,7 @@ class NewsController extends Controller
             $country->name = $country->name ?? $country->country_name ?? $country->nama ?? 'Indonesia';
         }
 
-        // Perbaikan di sini: Ambil array data berita dari $result['data']
+        // Ambil array data berita dari $result['data']
         $newsData = (isset($result['status']) && $result['status'] === 'success') ? $result['data'] : [];
 
         return view('countries.show_news', [

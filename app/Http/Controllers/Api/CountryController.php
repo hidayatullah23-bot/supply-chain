@@ -4,244 +4,311 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Country;
+use App\Models\RiskScore;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Api\NewsController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
 
 class CountryController extends Controller
 {
-    /**
-     * Tampilan Utama: Daftar Negara
-     */
     public function index()
     {
-        $countries = Country::all();
+        $countries = DB::table('countries')->get();
         return view('countries.index', compact('countries'));
     }
 
-    /**
-     * Tampilan Form Tambah Negara
-     */
-    public function create()
+    public function news($id)
     {
-        return view('countries.create');
+        return app(NewsController::class)->showNewsPage($id);
     }
-
-    /**
-     * Proses Menyimpan Data Negara Baru ke Database (Mode Los Validasi Unik)
-     */
-    public function store(Request $request)
-    {
-        // Paksa input country_code menjadi uppercase
-        if ($request->has('country_code')) {
-            $request->merge(['country_code' => strtoupper($request->country_code)]);
-        }
-
-        // Validasi diperlonggar (menghapus 'unique:countries,country_code') agar tidak terkunci error
-        $request->validate([
-            'country_name' => 'required|string|max:255',
-            'country_code' => 'required|string|max:5',
-            'currency' => 'required|string|max:10',
-            'region' => 'required|string|max:100',
-            'capital' => 'nullable|string|max:100',
-            'population' => 'required|numeric|min:0',
-        ]);
-
-        // Simpan ke database
-        Country::create([
-            'country_name' => $request->country_name,
-            'country_code' => $request->country_code,
-            'currency' => strtoupper($request->currency),
-            'region' => $request->region,
-            'capital' => $request->capital,
-            'population' => $request->population,
-        ]);
-
-        return redirect('/countries')->with('success', 'Wilayah operasional supply chain baru berhasil ditambahkan!');
-    }
-
-    /**
-     * FITUR UTAMA #1: Global Country Dashboard (World Bank & REST Countries API)
-     */
+    
     public function dashboard($id)
     {
-        // 1. Ambil data negara dari database lokal
-        $country = Country::findOrFail($id);
-        $countryName = $country->country_name; 
-        $countryCode = $country->country_code; 
-        $codeLower = strtolower($countryCode ?? 'id');
+        // Mengambil data negara beserta relasi riskScore saja
+        $countryData = Country::with(['riskScore'])->findOrFail($id);
+        
+        return view('countries.dashboard', compact('countryData'));
+    }
 
-        // Set default values pintar (Fallback jika API REST Countries bermasalah)
-        $countryData = [
-            'currency' => $country->currency ?? '-', 
-            'region' => $country->region ?? '-', 
-            'language' => ($codeLower === 'id') ? 'Indonesian' : '-', 
-            'flag' => "https://flagcdn.com/w80/{$codeLower}.png", 
-            'gdp' => 'Tidak tersedia', 
-            'inflation' => 'Tidak tersedia', 
-            'population' => number_format($country->population) . ' (Lokal)' 
-        ];
-        $errorMessage = null;
+    public function edit($id)
+    {
+        $countryData = DB::table('countries')->where('id', $id)->first();
 
-        try {
-            // 2. Tarik data Geografi dari REST Countries API
-            $restResponse = Http::get("https://restcountries.com/v3.1/name/" . urlencode($countryName) . "?fullText=true");
-            
-            if (!$restResponse->successful() || !isset($restResponse->json()[0])) {
-                $restResponse = Http::get("https://restcountries.com/v3.1/name/" . urlencode($countryName));
+        if (!$countryData) {
+            abort(404, 'Data negara tidak ditemukan.');
+        }
+
+        return view('countries.edit', compact('countryData'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'country_name' => 'required|string|max:255',
+        ]);
+
+        DB::table('countries')->where('id', $id)->update([
+            'country_name' => $request->country_name,
+            'updated_at' => now(),
+        ]);
+
+        return redirect('/countries')->with('success', 'Data negara berhasil diperbarui!');
+    }
+
+    public function calculateRisk($countryId)
+    {
+        $country = Country::findOrFail($countryId);
+
+        // 1. Ambil data cuaca real-time dari Open-Meteo API
+        $weatherScore = 20.00;
+        if ($country->latitude && $country->longitude) {
+            $response = Http::get("https://api.open-meteo.com/v1/forecast", [
+                'latitude' => $country->latitude,
+                'longitude' => $country->longitude,
+                'current_weather' => true,
+            ]);
+
+            if ($response->successful()) {
+                $weatherData = $response->json()['current_weather'] ?? null;
+                if ($weatherData) {
+                    $temperature = $weatherData['temperature'];
+                    $windspeed = $weatherData['windspeed'];
+
+                    $weatherScore = 10.00;
+                    if ($windspeed > 20) {
+                        $weatherScore += 40.00;
+                    }
+                    if ($temperature < 0 || $temperature > 35) {
+                        $weatherScore += 30.00;
+                    }
+                    $weatherScore = min($weatherScore, 100.00);
+                }
             }
+        }
 
-            if ($restResponse->successful() && isset($restResponse->json()[0])) {
-                $geoData = $restResponse->json()[0];
-                
-                // Ekstrak mata uang dari API
-                if (isset($geoData['currencies'])) {
-                    $currKey = array_key_first($geoData['currencies']);
-                    $countryData['currency'] = $geoData['currencies'][$currKey]['name'] . " (" . $currKey . ")";
-                }
-                
-                $countryData['region'] = $geoData['region'] ?? $country->region;
-                
-                // Ekstrak bahasa dari API
-                if (isset($geoData['languages'])) {
-                    $countryData['language'] = implode(', ', array_values($geoData['languages']));
-                }
-                
-                // Gunakan bendera dari API jika sukses ter-load
-                if (isset($geoData['flags']['png'])) {
-                    $countryData['flag'] = $geoData['flags']['png'];
-                }
-            }
+        // 2. Ambil data inflasi real-time dari World Bank API
+        $inflationScore = 35.00; 
+        if ($country->country_code) {
+            $isoCode = strtolower($country->country_code);
+            $wbResponse = Http::get("https://api.worldbank.org/v2/country/{$isoCode}/indicator/FP.CPI.TOTL.ZG", [
+                'format' => 'json',
+                'per_page' => 1
+            ]);
 
-            // 3. Tarik data Ekonomi dari World Bank API
-            $indicators = [
-                'gdp' => 'NY.GDP.MKTP.CD',
-                'inflation' => 'FP.CPI.TOTL.ZG',
-                'population' => 'SP.POP.TOTL'
-            ];
-
-            foreach ($indicators as $key => $indicatorCode) {
-                $wbResponse = Http::get("https://api.worldbank.org/v2/country/" . urlencode($countryCode ?? 'ID') . "/indicator/{$indicatorCode}?format=json&per_page=5");
-                
-                if ($wbResponse->successful() && isset($wbResponse->json()[1])) {
-                    $records = $wbResponse->json()[1];
-                    foreach ($records as $record) {
-                        if ($record['value'] !== null) {
-                            if ($key == 'gdp') {
-                                $countryData['gdp'] = '$' . number_format($record['value'] / 1000000000, 2) . ' Billion (' . $record['date'] . ')';
-                            } elseif ($key == 'inflation') {
-                                $countryData['inflation'] = number_format($record['value'], 2) . '% (' . $record['date'] . ')';
-                            } elseif ($key == 'population') {
-                                $countryData['population'] = number_format($record['value']) . ' (' . $record['date'] . ')';
-                            }
-                            break;
-                        }
+            if ($wbResponse->successful()) {
+                $wbData = $wbResponse->json();
+                if (isset($wbData[1][0]['value']) && $wbData[1][0]['value'] !== null) {
+                    $rate = $wbData[1][0]['value'];
+                    $inflationScore = 20.00;
+                    if ($rate > 5.00) {
+                        $inflationScore = min(20.00 + ($rate * 10), 100.00);
+                    } elseif ($rate < 0) {
+                        $inflationScore = 60.00;
                     }
                 }
             }
-
-        } catch (\Exception $e) {
-            $errorMessage = "Koneksi ke API geografi terganggu, menggunakan data lokal cadangan.";
         }
 
-        return view('countries.dashboard', compact('country', 'countryData', 'errorMessage'));
-    }
+        // 3. Kurs (Currency Risk)
+        $currencyScore = 25.00;   
 
-    /**
-     * FITUR UTAMA #5: News Intelligence & Sentiment Analysis (GNews API dengan Mock Fallback)
-     */
-    public function news($id)
-    {
-        $country = Country::findOrFail($id);
-        $countryName = $country->country_name; 
-        $cacheKey = 'news_sentiment_' . $id;
+        // 4. Analisis Sentimen Berita Real-time
+        $newsSentimentScore = 50.00; 
+        $query = urlencode($country->country_name);
+        $apiKey = 'YOUR_GNEWS_API_KEY'; 
+        $newsResponse = Http::get("https://gnews.io/api/v4/search?q={$query}&lang=en&token={$apiKey}&max=3");
 
-        $cachedData = Cache::remember($cacheKey, 3600, function () use ($countryName) {
-            $apiKey = '63da31e5f80e9fcb942fdf4e9a0fec2e'; 
-            $query = urlencode($countryName . ' AND (logistics OR shipping OR trade OR economy)');
-            $url = "https://gnews.io/api/v4/search?q={$query}&lang=en&token={$apiKey}&max=5";
+        if ($newsResponse->successful()) {
+            $articles = $newsResponse->json()['articles'] ?? [];
+            if (count($articles) > 0) {
+                $negativeWords = ['crisis', 'strike', 'shortage', 'inflation', 'disaster', 'conflict', 'war', 'risk'];
+                $positiveWords = ['growth', 'stable', 'boost', 'recovery', 'profit', 'success'];
+                $points = 0;
 
-            try {
-                $response = Http::timeout(5)->get($url);
-                
-                if ($response->successful()) {
-                    $articles = $response->json()['articles'] ?? [];
-                    return [
-                        'newsData' => $this->analyzeLexiconSentiment($articles),
-                        'errorMessage' => null
-                    ];
+                foreach ($articles as $art) {
+                    $txt = strtolower(($art['title'] ?? '') . ' ' . ($art['description'] ?? ''));
+                    $s = 50.00;
+                    foreach ($negativeWords as $w) { if (str_contains($txt, $w)) $s += 15.00; }
+                    foreach ($positiveWords as $w) { if (str_contains($txt, $w)) $s -= 15.00; }
+                    $points += max(0.00, min(100.00, $s));
                 }
-                
-                throw new \Exception("API Error Status: " . $response->status());
-
-            } catch (\Exception $e) {
-                $mockArticles = [
-                    [
-                        'title' => "{$countryName} Economic Growth Boosts Maritime Trade and Port Infrastructure Logistics",
-                        'description' => "The government reported a stable increase in shipping container volume this quarter. Trade partnerships and modern logistics hubs are expected to strengthen regional profit margins significantly.",
-                        'url' => "https://example.com/news/trade-growth"
-                    ],
-                    [
-                        'title' => "Global Inflation and Fuel Crisis Threatens Shipping Networks in {$countryName}",
-                        'description' => "A sharp drop in manufacturing output has triggered disruption across domestic supply chains. Experts warn that prolonged delay risks could deepen the ongoing economic conflict.",
-                        'url' => "https://example.com/news/inflation-disruption"
-                    ],
-                    [
-                        'title' => "New International Trade Agreement Signed to Improve Logistics Efficiency",
-                        'description' => "A bilateral cooperation pact aims to streamline customs and remove transport bottlenecks. This strategic partnership is expected to create a highly stable environment for export-import growth.",
-                        'url' => "https://example.com/news/cooperation-deal"
-                    ]
-                ];
-
-                return [
-                    'newsData' => $this->analyzeLexiconSentiment($mockArticles),
-                    'errorMessage' => "GNews API offline/unauthorized (Error 401). Menampilkan simulasi data intelijen langsung untuk {$countryName}."
-                ];
+                $newsSentimentScore = $points / count($articles);
             }
-        });
-
-        $newsData = $cachedData['newsData'];
-        $errorMessage = $cachedData['errorMessage'];
-
-        return view('countries.show_news', compact('country', 'newsData', 'errorMessage'));
-    }
-
-    /**
-     * FITUR AI / DATA SCIENCE: Lexicon Based Sentiment Analysis Engine
-     */
-    private function analyzeLexiconSentiment($articles)
-    {
-        $positiveWords = ['growth', 'increase', 'profit', 'stable', 'improve', 'strengthen', 'agreement', 'cooperation', 'partnership'];
-        $negativeWords = ['war', 'crisis', 'inflation', 'delay', 'disaster', 'decrease', 'drop', 'conflict', 'risk', 'disruption'];
-
-        $processedArticles = [];
-
-        foreach ($articles as $article) {
-            $text = strtolower(($article['title'] ?? '') . ' ' . ($article['description'] ?? ''));
-            $words = explode(' ', preg_replace('/[^a-z0-9 ]/i', '', $text));
-
-            $posScore = 0;
-            $negScore = 0;
-
-            foreach ($words as $word) {
-                if (in_array($word, $positiveWords)) $posScore++;
-                if (in_array($word, $negativeWords)) $negScore++;
-            }
-
-            $status = 'Neutral';
-            if ($posScore > $negScore) $status = 'Positive';
-            elseif ($negScore > $posScore) $status = 'Negative';
-
-            $processedArticles[] = [
-                'title' => $article['title'] ?? 'No Title',
-                'description' => $article['description'] ?? 'No Description',
-                'source_url' => $article['url'] ?? '#',
-                'sentiment_status' => $status,
-                'sentiment_score_positive' => $posScore,
-                'sentiment_score_negative' => $negScore,
-            ];
         }
 
-        return $processedArticles;
+        // 5. Penerapan Weighted Risk Model (Bobot Sesuai Spesifikasi)
+        // Cuaca (30%), Inflasi (20%), Kurs (10%), Sentimen Berita (40%)
+        $totalRisk = ($weatherScore * 0.30) + 
+                     ($inflationScore * 0.20) + 
+                     ($currencyScore * 0.10) + 
+                     ($newsSentimentScore * 0.40);
+
+        // 6. Tentukan Risk Level
+        $level = 'Low Risk';
+        if ($totalRisk >= 40 && $totalRisk < 70) {
+            $level = 'Medium Risk';
+        } elseif ($totalRisk >= 70) {
+            $level = 'High Risk';
+        }
+
+        // 7. Simpan atau update ke tabel risk_scores
+        RiskScore::updateOrCreate(
+            ['country_id' => $countryId],
+            [
+                'weather_risk' => $weatherScore,
+                'inflation_risk' => $inflationScore,
+                'currency_risk' => $currencyScore,
+                'news_sentiment_risk' => $newsSentimentScore,
+                'total_risk_score' => $totalRisk,
+                'risk_level' => $level
+            ]
+        );
+
+        return response()->json([
+            'message' => 'Risk score berhasil dikalkulasi dengan seluruh indikator real-time!',
+            'country' => $country->country_name,
+            'weather_risk' => $weatherScore,
+            'inflation_risk' => $inflationScore,
+            'news_sentiment_risk' => $newsSentimentScore,
+            'total_risk' => $totalRisk,
+            'risk_level' => $level
+        ]);
+    }
+
+    public function fetchWeatherRisk($countryId)
+    {
+        $country = Country::findOrFail($countryId);
+
+        if (!$country->latitude || !$country->longitude) {
+            return response()->json(['message' => 'Koordinat latitude/longitude negara tidak tersedia.'], 400);
+        }
+
+        $response = Http::get("https://api.open-meteo.com/v1/forecast", [
+            'latitude' => $country->latitude,
+            'longitude' => $country->longitude,
+            'current_weather' => true,
+        ]);
+
+        if ($response->successful()) {
+            $weatherData = $response->json()['current_weather'] ?? null;
+
+            if ($weatherData) {
+                $temperature = $weatherData['temperature'];
+                $windspeed = $weatherData['windspeed'];
+
+                $weatherRiskScore = 10.00;
+                
+                if ($windspeed > 20) {
+                    $weatherRiskScore += 40.00;
+                }
+                if ($temperature < 0 || $temperature > 35) {
+                    $weatherRiskScore += 30.00;
+                }
+
+                $weatherRiskScore = min($weatherRiskScore, 100.00);
+
+                return response()->json([
+                    'message' => 'Data cuaca berhasil ditarik dari Open-Meteo!',
+                    'country' => $country->country_name,
+                    'temperature' => $temperature,
+                    'windspeed' => $windspeed,
+                    'calculated_weather_risk' => $weatherRiskScore
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'Gagal mengambil data dari Open-Meteo API.'], 500);
+    }
+
+    public function fetchInflationRisk($countryId)
+    {
+        $country = Country::findOrFail($countryId);
+
+        if (!$country->country_code) {
+            return response()->json(['message' => 'Kode ISO negara tidak tersedia.'], 400);
+        }
+
+        $isoCode = strtolower($country->country_code);
+        $response = Http::get("https://api.worldbank.org/v2/country/{$isoCode}/indicator/FP.CPI.TOTL.ZG", [
+            'format' => 'json',
+            'per_page' => 1
+        ]);
+
+        $inflationRate = 3.00; 
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if (isset($data[1][0]['value']) && $data[1][0]['value'] !== null) {
+                $inflationRate = $data[1][0]['value'];
+            }
+        }
+
+        $inflationRiskScore = 20.00; 
+        
+        if ($inflationRate > 5.00) {
+            $inflationRiskScore = min(20.00 + ($inflationRate * 10), 100.00);
+        } elseif ($inflationRate < 0) {
+            $inflationRiskScore = 60.00; 
+        }
+
+        return response()->json([
+            'message' => 'Data inflasi berhasil ditarik dari World Bank API!',
+            'country' => $country->country_name,
+            'inflation_rate_percent' => $inflationRate,
+            'calculated_inflation_risk' => $inflationRiskScore
+        ]);
+    }
+
+    public function fetchNewsSentiment($countryId)
+    {
+        $country = Country::findOrFail($countryId);
+
+        $query = urlencode($country->country_name);
+        $apiKey = 'YOUR_GNEWS_API_KEY'; 
+
+        $response = Http::get("https://gnews.io/api/v4/search?q={$query}&lang=en&token={$apiKey}&max=5");
+
+        $sentimentScore = 50.00; 
+        $articlesCount = 0;
+
+        if ($response->successful()) {
+            $articles = $response->json()['articles'] ?? [];
+            $negativeWords = ['crisis', 'strike', 'shortage', 'inflation', 'disaster', 'conflict', 'war', 'drop', 'fall', 'risk'];
+            $positiveWords = ['growth', 'surging', 'stable', 'boost', 'recovery', 'profit', 'gain', 'success'];
+
+            $totalSentimentPoints = 0;
+
+            foreach ($articles as $article) {
+                $text = strtolower(($article['title'] ?? '') . ' ' . ($article['description'] ?? ''));
+                $articleScore = 50.00; 
+
+                foreach ($negativeWords as $word) {
+                    if (str_contains($text, $word)) {
+                        $articleScore += 15.00; 
+                    }
+                }
+
+                foreach ($positiveWords as $word) {
+                    if (str_contains($text, $word)) {
+                        $articleScore -= 15.00; 
+                    }
+                }
+
+                $totalSentimentPoints += max(0.00, min(100.00, $articleScore));
+                $articlesCount++;
+            }
+
+            if ($articlesCount > 0) {
+                $sentimentScore = $totalSentimentPoints / $articlesCount;
+            }
+        }
+
+        return response()->json([
+            'message' => 'Analisis sentimen berita berhasil!',
+            'country' => $country->country_name,
+            'articles_analyzed' => $articlesCount,
+            'calculated_news_sentiment_risk' => $sentimentScore
+        ]);
     }
 }

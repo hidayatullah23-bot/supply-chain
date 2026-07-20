@@ -16,4 +16,14 @@ class Country extends Model
         'latitude', 
         'longitude'
     ];
-} 
+
+    public function newsCache()
+    {
+        return $this->hasMany(NewsCache::class, 'country_id');
+    } // Kurung kurawal penutup newsCache sudah benar di sini
+
+    public function riskScore()
+    {
+        return $this->hasOne(RiskScore::class, 'country_id');
+    }
+}

@@ -1,103 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Negara</title>
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body{
-            font-family: Arial;
-            background:#f4f4f4;
-            margin:40px;
-        }
-
-        .container{
-            width:600px;
-            margin:auto;
-            background:white;
-            padding:20px;
-            border-radius:10px;
-            box-shadow:0 0 10px rgba(0,0,0,.2);
-        }
-
-        input{
-            width:100%;
-            padding:10px;
-            margin-bottom:15px;
-            box-sizing:border-box;
-        }
-
-        button{
-            padding:10px 20px;
-            background:#e67e22;
-            color:white;
-            border:none;
-            cursor:pointer;
-        }
-
-        a{
-            text-decoration:none;
-        }
+        body { background-color: #f4f6f9; }
+        .main-card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     </style>
-
 </head>
 <body>
 
-<div class="container">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card main-card p-4 bg-white">
+                <h3 class="fw-bold text-dark mb-3"><i class="fa-solid fa-pen-to-square me-2"></i> Edit Negara</h3>
+                <hr>
 
-<h2>Edit Negara</h2>
+                <form action="/countries/{{ $countryData->id }}" method="POST">
+                    @csrf
+                    @method('PUT')
 
-@if ($errors->any())
+                    <div class="mb-3">
+                        <label for="country_name" class="form-label fw-semibold">Nama Negara</label>
+                        <input type="text" class="form-control" id="country_name" name="country_name" value="{{ $countryData->country_name }}" required>
+                    </div>
 
-<div style="color:red">
-
-<ul>
-
-@foreach($errors->all() as $error)
-
-<li>{{ $error }}</li>
-
-@endforeach
-
-</ul>
-
+                    <div class="d-flex justify-content-between">
+                        <a href="/countries" class="btn btn-secondary">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-save me-1"></i> Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
-@endif
-
-<form action="{{ route('countries.update', $country->id) }}" method="POST">
-
-    @csrf
-    @method('PUT')
-
-    <label>Nama Negara</label>
-    <input type="text" name="country_name" value="{{ $country->country_name }}"> <!-- SUDAH DIPERBAIKI -->
-
-    <label>Kode Negara</label>
-    <input type="text" name="country_code" value="{{ $country->country_code }}"> <!-- SUDAH DIPERBAIKI -->
-
-    <label>Ibu Kota</label>
-    <input type="text" name="capital" value="{{ $country->capital }}">
-
-    <label>Mata Uang</label>
-    <input type="text" name="currency" value="{{ $country->currency }}">
-
-    <label>Region</label>
-    <input type="text" name="region" value="{{ $country->region }}">
-
-    <label>Populasi</label>
-    <input type="number" name="population" value="{{ $country->population }}">
-
-    <button type="submit">
-        Simpan Perubahan
-    </button>
-
-    <a href="{{ route('countries.index') }}">
-        Kembali
-    </a>
-
-</form>
-
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

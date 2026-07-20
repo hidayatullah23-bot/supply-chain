@@ -24,7 +24,6 @@
                 <h1 class="fw-bold text-dark m-0">Daftar Negara</h1>
                 <p class="text-muted m-0">Kelola wilayah operasional supply chain global</p>
             </div>
-            <!-- Menggunakan URL manual agar tidak memicu RouteNotFoundException -->
             <a href="/countries/create" class="btn btn-primary fw-semibold px-4 py-2">
                 <i class="fa-solid fa-plus me-1"></i> Tambah Negara
             </a>
@@ -50,22 +49,22 @@
                             
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
-                                    <!-- Fitur #1: Dashboard Intelijen -->
+                                    <!-- Tombol View Profile -->
                                     <a href="{{ route('countries.dashboard', $country->id) }}" class="btn btn-primary btn-sm px-3">
                                         <i class="fa-solid fa-chart-pie me-1"></i> View Profile
                                     </a>
 
-                                    <!-- Fitur #5: Analisis Berita Sentimen -->
+                                    <!-- Tombol Analisis Berita -->
                                     <a href="{{ route('countries.news', $country->id) }}" class="btn btn-info text-white btn-sm px-3">
                                         <i class="fa-solid fa-newspaper me-1"></i> Analisis Berita
                                     </a>
 
-                                    <!-- Tombol Edit dengan path URL manual -->
+                                    <!-- Tombol Edit -->
                                     <a href="/countries/{{ $country->id }}/edit" class="btn btn-warning btn-sm text-dark px-3">
                                         <i class="fa-solid fa-pen-to-square me-1"></i> Edit
                                     </a>
 
-                                    <!-- Tombol Hapus dengan path URL manual -->
+                                    <!-- Tombol Hapus -->
                                     <form action="/countries/{{ $country->id }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus negara ini?');" class="d-inline">
                                         @csrf
                                         @method('DELETE')

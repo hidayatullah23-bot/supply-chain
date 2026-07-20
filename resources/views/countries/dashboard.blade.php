@@ -4,102 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Risiko - {{ $countryData->country_name }}</title>
-    <!-- Tailwind CSS CDN untuk styling yang cepat & modern -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
-
-    <div class="container mx-auto p-6 max-w-5xl">
-        <!-- Header & Navigasi -->
-        <div class="flex justify-between items-center mb-6">
+<body class="bg-light">
+    <div class="container py-5">
+        
+        <!-- Navigasi Atas & Tombol Ekspor PDF -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">Supply Chain Risk Dashboard</h1>
-                <p class="text-gray-600">Analisis risiko real-time untuk negara: <span class="font-semibold text-blue-600">{{ $countryData->country_name }}</span> ({{ $countryData->country_code }})</p>
+                <a href="/countries" class="btn btn-secondary mb-2">← Kembali ke Master Dashboard</a>
+                <h2 class="fw-bold mb-0">📊 Risk Intelligence Dashboard: {{ $countryData->country_name }}</h2>
             </div>
-            <a href="{{ route('countries.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition">
-                &larr; Kembali ke Daftar
-            </a>
+            <div>
+                <a href="{{ route('countries.export', $countryData->id) }}" class="btn btn-outline-dark" target="_blank">📄 Unduh / Cetak Laporan PDF</a>
+            </div>
         </div>
 
-        <!-- Kartu Skor Risiko Utama -->
-        @php
-            $riskScore = $countryData->riskScore;
-            $totalRisk = $riskScore->total_risk_score ?? 0;
-            $riskLevel = $riskScore->risk_level ?? 'Belum Dikalkulasi';
-            
-            // Warna badge berdasarkan level risiko
-            $badgeColor = 'bg-gray-400';
-            if ($riskLevel == 'Low Risk') $badgeColor = 'bg-green-500';
-            elseif ($riskLevel == 'Medium Risk') $badgeColor = 'bg-yellow-500';
-            elseif ($riskLevel == 'High Risk') $badgeColor = 'bg-red-500';
-        @endphp
-
-        <div class="bg-white rounded-xl shadow-md p-6 mb-8 border-l-8 border-blue-600 flex flex-col md:flex-row justify-between items-center">
-            <div>
-                <span class="text-sm font-bold uppercase tracking-wider text-gray-500">Status Risiko Keseluruhan</span>
-                <div class="text-4xl font-extrabold text-gray-900 mt-1">
-                    {{ number_format($totalRisk, 2) }} <span class="text-lg font-normal text-gray-500">/ 100</span>
+        <!-- Informasi Utama Negara -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3 h-100">
+                    <h5 class="text-muted mb-2">Profil Negara</h5>
+                    <p class="mb-1"><strong>Nama:</strong> {{ $countryData->country_name }}</p>
+                    <p class="mb-1"><strong>Kode ISO:</strong> {{ $countryData->country_code ?? '-' }}</p>
+                    <p class="mb-0"><strong>Koordinat:</strong> {{ $countryData->latitude ?? '-' }}, {{ $countryData->longitude ?? '-' }}</p>
                 </div>
             </div>
-            <div class="mt-4 md:mt-0 flex items-center space-x-4">
-                <span class="{{ $badgeColor }} text-white px-5 py-2 rounded-full font-bold text-lg shadow">
-                    {{ $riskLevel }}
-                </span>
-                <button onclick="triggerRecalculate('{{ $countryData->id }}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition shadow">
-                    Perbarui Analisis (Refresh API)
-                </button>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3 h-100 border-start border-primary border-4">
+                    <h5 class="text-muted mb-2">Total Risk Score</h5>
+                    <h2 class="fw-bold text-primary mb-1">
+                        {{ $countryData->riskScore->total_risk_score ?? 'Belum Dikalkulasi' }} 
+                        <span class="fs-6 text-muted">/ 100</span>
+                    </h2>
+                    <p class="mb-0 text-muted">Model Tertimbang (Weather, Inflation, Currency, News)</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3 h-100 border-start border-{{ ($countryData->riskScore->risk_level ?? '') == 'High Risk' ? 'danger' : 'success' }} border-4">
+                    <h5 class="text-muted mb-2">Status Level Risiko</h5>
+                    <h3 class="fw-bold text-{{ ($countryData->riskScore->risk_level ?? '') == 'High Risk' ? 'danger' : 'success' }} mb-2">
+                        {{ $countryData->riskScore->risk_level ?? 'N/A' }}
+                    </h3>
+                    <button onclick="calculateRisk({{ $countryData->id }})" class="btn btn-sm btn-dark w-100">🔄 Kalkulasi Ulang Risiko Real-time</button>
+                </div>
             </div>
         </div>
 
-        <!-- Grid Detail Komponen Risiko (Bobot) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <!-- Weather Risk -->
-            <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-indigo-500">
-                <h3 class="text-gray-500 text-sm font-semibold">Risiko Cuaca (30%)</h3>
-                <div class="text-2xl font-bold text-gray-800 mt-2">{{ number_format($riskScore->weather_risk ?? 0, 2) }}</div>
-                <p class="text-xs text-gray-400 mt-1">Sumber: Open-Meteo API</p>
+        <!-- Tabel Detail Indikator Risiko -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white fw-bold py-3">
+                📈 Detail Parameter & Bobot Penilaian Supply Chain
             </div>
-
-            <!-- Inflation Risk -->
-            <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-yellow-500">
-                <h3 class="text-gray-500 text-sm font-semibold">Risiko Inflasi (20%)</h3>
-                <div class="text-2xl font-bold text-gray-800 mt-2">{{ number_format($riskScore->inflation_risk ?? 0, 2) }}</div>
-                <p class="text-xs text-gray-400 mt-1">Sumber: World Bank API</p>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Parameter Indikator</th>
+                            <th>Bobot Model</th>
+                            <th>Skor Terhitung</th>
+                            <th>Sumber API Integrasi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Risiko Cuaca & Logistik Pelabuhan</td>
+                            <td>30%</td>
+                            <td><span class="badge bg-secondary">{{ $countryData->riskScore->weather_risk ?? '-' }}</span></td>
+                            <td>Open-Meteo API</td>
+                        </tr>
+                        <tr>
+                            <td>Risiko Inflasi Makroekonomi</td>
+                            <td>20%</td>
+                            <td><span class="badge bg-secondary">{{ $countryData->riskScore->inflation_risk ?? '-' }}</span></td>
+                            <td>World Bank API</td>
+                        </tr>
+                        <tr>
+                            <td>Risiko Fluktuasi Nilai Tukar (Kurs)</td>
+                            <td>10%</td>
+                            <td><span class="badge bg-secondary">{{ $countryData->riskScore->currency_risk ?? '-' }}</span></td>
+                            <td>Exchange Rate Engine</td>
+                        </tr>
+                        <tr>
+                            <td>Risiko Sentimen Pemberitaan Global</td>
+                            <td>40%</td>
+                            <td><span class="badge bg-secondary">{{ $countryData->riskScore->news_sentiment_risk ?? '-' }}</span></td>
+                            <td>GNews API Analytics</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-            <!-- Currency Risk -->
-            <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-green-500">
-                <h3 class="text-gray-500 text-sm font-semibold">Risiko Kurs (10%)</h3>
-                <div class="text-2xl font-bold text-gray-800 mt-2">{{ number_format($riskScore->currency_risk ?? 0, 2) }}</div>
-                <p class="text-xs text-gray-400 mt-1">Indikator Valas / Exchange</p>
+        <!-- Navigasi Fitur Tambahan (Berita & Grafik Kurs) -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card shadow-sm p-3 text-center">
+                    <h5>📰 Pantau Berita & Sentimen Terkini</h5>
+                    <p class="text-muted small">Analisis artikel berita global terkait gangguan rantai pasok.</p>
+                    <a href="{{ route('countries.news', $countryData->id) }}" class="btn btn-info text-white">Buka Modul Berita</a>
+                </div>
             </div>
-
-            <!-- News Sentiment Risk -->
-            <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-red-500">
-                <h3 class="text-gray-500 text-sm font-semibold">Sentimen Berita (40%)</h3>
-                <div class="text-2xl font-bold text-gray-800 mt-2">{{ number_format($riskScore->news_sentiment_risk ?? 0, 2) }}</div>
-                <p class="text-xs text-gray-400 mt-1">Sumber: GNews Analysis</p>
+            <div class="col-md-6">
+                <div class="card shadow-sm p-3 text-center">
+                    <h5>💱 Grafik Tren Nilai Tukar (Kurs)</h5>
+                    <p class="text-muted small">Visualisasi Chart.js fluktuasi mata uang historis.</p>
+                    <a href="{{ route('countries.currency', $countryData->id) }}" class="btn btn-success text-white">Buka Grafik Kurs</a>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Script sederhana untuk tombol refresh kalkulasi -->
+    <!-- Script Kalkulasi Risiko Otomatis -->
     <script>
-        function triggerRecalculate(countryId) {
-            if(confirm('Tarik data terbaru dari API eksternal dan hitung ulang skor risiko?')) {
-                fetch('/countries/' + countryId + '/calculate-risk')
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message);
-                        location.reload(); // Muat ulang halaman untuk menampilkan data baru
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Terjadi kesalahan saat memperbarui data.');
-                    });
-            }
+        function calculateRisk(countryId) {
+            if(!confirm('Jalankan kalkulasi ulang risiko menggunakan data API real-time?')) return;
+            
+            fetch('/countries/' + countryId + '/calculate-risk')
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    location.reload();
+                })
+                .catch(error => {
+                    alert('Terjadi kesalahan saat kalkulasi.');
+                    console.error(error);
+                });
         }
     </script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -14,7 +14,7 @@ class CountryController extends Controller
 {
     public function index()
     {
-        $countries = DB::table('countries')->get();
+        $countries = Country::with(['riskScore'])->get();
         return view('countries.index', compact('countries'));
     }
 
@@ -29,6 +29,40 @@ class CountryController extends Controller
         $countryData = Country::with(['riskScore'])->findOrFail($id);
         
         return view('countries.dashboard', compact('countryData'));
+    }
+
+    public function compare(Request $request)
+    {
+        $countries = DB::table('countries')->get();
+        
+        $country1 = null;
+        $country2 = null;
+        $risk1 = null;
+        $risk2 = null;
+
+        if ($request->has('country_id_1') && $request->has('country_id_2')) {
+            $country1 = Country::with(['riskScore'])->find($request->country_id_1);
+            $country2 = Country::with(['riskScore'])->find($request->country_id_2);
+        }
+
+        return view('countries.compare', compact('countries', 'country1', 'country2'));
+    }
+
+    public function mapView()
+    {
+        $countries = Country::with(['riskScore'])->get();
+        return view('countries.map', compact('countries'));
+    }
+
+    public function currencyChart($id)
+    {
+        $countryData = Country::findOrFail($id);
+        
+        // Data historis tren kurs untuk demonstrasi grafik Chart.js
+        $currencyLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+        $currencyValues = [15000, 15100, 14900, 15200, 15350, 15250, 15400];
+
+        return view('countries.currency', compact('countryData', 'currencyLabels', 'currencyValues'));
     }
 
     public function edit($id)
@@ -138,7 +172,6 @@ class CountryController extends Controller
         }
 
         // 5. Penerapan Weighted Risk Model (Bobot Sesuai Spesifikasi)
-        // Cuaca (30%), Inflasi (20%), Kurs (10%), Sentimen Berita (40%)
         $totalRisk = ($weatherScore * 0.30) + 
                      ($inflationScore * 0.20) + 
                      ($currencyScore * 0.10) + 

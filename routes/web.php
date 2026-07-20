@@ -20,3 +20,9 @@ Route::get('/countries/{id}/fetch-weather', [CountryController::class, 'fetchWea
 Route::get('/countries/{id}/fetch-inflation', [CountryController::class, 'fetchInflationRisk']);
 
 Route::get('/countries/{id}/fetch-sentiment', [CountryController::class, 'fetchNewsSentiment']);
+
+Route::get('/countries/compare', [CountryController::class, 'compare'])->name('countries.compare');
+
+Route::get('/countries/map', [CountryController::class, 'mapView'])->name('countries.map');
+
+Route::get('/countries/{id}/currency', [CountryController::class, 'currencyChart'])->name('countries.currency');

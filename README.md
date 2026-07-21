@@ -56,7 +56,7 @@ GET /api/countries/{country}/analytics
 
 ```text
 Email: admin@supplychain.test
-Password: password
+Password: nilai `ADMIN_DEFAULT_PASSWORD` pada file `.env`
 ```
 
 Ganti password setelah login. Jalankan pengujian dengan `php artisan test`.

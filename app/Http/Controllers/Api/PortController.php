@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -28,7 +30,7 @@ class PortController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $query->get()
+            'data' => $query->get(['id', 'port_name', 'country_name', 'latitude', 'longitude'])
         ]);
     }
 }

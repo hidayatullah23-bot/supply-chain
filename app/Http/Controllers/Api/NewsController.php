@@ -42,7 +42,7 @@ class NewsController extends Controller
         }
 
         // 3. Jika tidak ada cache, ambil data dari API GNews dengan fallback key aman
-        $apiKey = env('GNEWS_API_KEY') ?? config('app.gnews_api_key') ?? 'd53a9440957c3f8a534357193d0cf020';
+        $apiKey = config('services.gnews.key');
         
         if (!$apiKey) {
             return response()->json([
@@ -112,6 +112,7 @@ class NewsController extends Controller
                 'title' => $title,
                 'description' => $description,
                 'source_url' => $article['url'],
+                'image_url' => $article['image'] ?? null,
                 'sentiment_status' => $sentiment,
                 'sentiment_score_positive' => $scorePositive,
                 'sentiment_score_negative' => $scoreNegative,

@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('ports', function (Blueprint $table) {
             $table->id();
+            $table->string('port_name');
+            $table->string('country_name');
+            $table->decimal('latitude', 10, 8);
+            $table->decimal('longitude', 11, 8);
             $table->timestamps();
         });
     }

@@ -11,15 +11,16 @@
             .no-print { display: none; }
         }
     </style>
+    @include('components.dark-theme')
 </head>
 <body class="py-5">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
             <div>
-                <h2 class="fw-bold mb-0">📦 Supply Chain Risk Intelligence Report</h2>
+                <h2 class="fw-bold mb-0">ðŸ“¦ Supply Chain Risk Intelligence Report</h2>
                 <p class="text-muted mb-0">Official Executive Summary & Risk Assessment</p>
             </div>
-            <button onclick="window.print()" class="btn btn-dark no-print">🖨️ Cetak / Simpan PDF</button>
+            <button onclick="window.print()" class="btn btn-dark no-print">ðŸ–¨ï¸ Cetak / Simpan PDF</button>
         </div>
 
         <div class="row mb-4">

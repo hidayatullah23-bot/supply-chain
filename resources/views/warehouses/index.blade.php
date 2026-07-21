@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Gudang - Supply Chain</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @include('components.dark-theme')
 </head>
 <body class="bg-gray-100">
 
 <!-- MENU NAVIGASI UTAMA -->
 <nav class="bg-slate-900 p-4 text-white shadow mb-8">
     <div class="max-w-7xl mx-auto flex gap-6 font-medium">
-        <a href="{{ route('countries.index') }}" class="hover:text-blue-400 transition pb-1">🌍 Data Negara</a>
-        <a href="{{ route('suppliers.index') }}" class="hover:text-blue-400 transition pb-1">🏭 Data Supplier</a>
-        <a href="{{ route('warehouses.index') }}" class="text-blue-400 border-b-2 border-blue-400 pb-1">🏠 Data Gudang</a>
+        <a href="{{ route('countries.index') }}" class="hover:text-blue-400 transition pb-1">ðŸŒ Data Negara</a>
+        <a href="{{ route('suppliers.index') }}" class="hover:text-blue-400 transition pb-1">ðŸ­ Data Supplier</a>
+        <a href="{{ route('warehouses.index') }}" class="text-blue-400 border-b-2 border-blue-400 pb-1">ðŸ  Data Gudang</a>
     </div>
 </nav>
 
 <!-- KONTEN UTAMA -->
 <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md mb-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">🏠 Daftar Gudang (Warehouses)</h1>
+        <h1 class="text-2xl font-bold text-gray-800">ðŸ  Daftar Gudang (Warehouses)</h1>
     </div>
 
     <!-- NOTIFIKASI SUKSES -->
@@ -68,7 +69,7 @@
                     <th class="py-3 px-4 border">Kode Gudang</th>
                     <th class="py-3 px-4 border">Nama Gudang</th>
                     <th class="py-3 px-4 border">Lokasi Negara</th>
-                    <th class="py-3 px-4 border text-right">Kapasitas (m³)</th>
+                    <th class="py-3 px-4 border text-right">Kapasitas (mÂ³)</th>
                     <th class="py-3 px-4 border text-center">Status</th>
                     <th class="py-3 px-4 border text-center">Aksi</th>
                 </tr>
@@ -85,10 +86,10 @@
                     <td class="py-3 px-4 border font-semibold text-gray-900">{{ $warehouse->warehouse_name }}</td>
                     <td class="py-3 px-4 border">
                         <span class="bg-blue-50 text-blue-800 text-xs px-2.5 py-1 rounded font-medium">
-                            🌍 {{ $warehouse->country->country_name ?? 'Tidak Diketahui' }}
+                            ðŸŒ {{ $warehouse->country->country_name ?? 'Tidak Diketahui' }}
                         </span>
                     </td>
-                    <td class="py-3 px-4 border text-right font-mono font-semibold text-gray-800">{{ number_format($warehouse->capacity_m3) }} m³</td>
+                    <td class="py-3 px-4 border text-right font-mono font-semibold text-gray-800">{{ number_format($warehouse->capacity_m3) }} mÂ³</td>
                     <td class="py-3 px-4 border text-center">
                         @if($warehouse->status == 'active')
                             <span class="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full font-medium">Active</span>

@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Supplier - Supply Chain</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @include('components.dark-theme')
 </head>
 <body class="bg-gray-100">
 
 <nav class="bg-slate-900 p-4 text-white shadow mb-8">
     <div class="max-w-7xl mx-auto flex gap-6 font-medium">
-        <a href="{{ route('countries.index') }}" class="hover:text-blue-400 transition">🌍 Data Negara</a>
-        <a href="{{ route('suppliers.index') }}" class="text-blue-400 border-b-2 border-blue-400 pb-1">🏭 Data Supplier</a>
+        <a href="{{ route('countries.index') }}" class="hover:text-blue-400 transition">ðŸŒ Data Negara</a>
+        <a href="{{ route('suppliers.index') }}" class="text-blue-400 border-b-2 border-blue-400 pb-1">ðŸ­ Data Supplier</a>
     </div>
 </nav>
 
 <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md mb-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-xl font-bold text-gray-800">📝 Edit Data Supplier</h1>
+        <h1 class="text-xl font-bold text-gray-800">ðŸ“ Edit Data Supplier</h1>
         <a href="{{ route('suppliers.index') }}" class="text-gray-600 hover:underline text-sm">Kembali</a>
     </div>
 

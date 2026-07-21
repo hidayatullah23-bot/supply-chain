@@ -1,22 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Dashboard Countries</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Global Risk Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root{--navy:#0b1220;--navy2:#111c31;--ink:#162033;--muted:#738096;--page:#f1f5f9;--accent:#6d5dfc}
+        *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.app{min-height:100vh;display:flex}.sidebar{width:270px;background:linear-gradient(180deg,var(--navy),var(--navy2));color:#dce5f4;padding:24px 18px;position:fixed;inset:0 auto 0 0;z-index:1040;overflow:auto}.brand{display:flex;align-items:center;gap:11px;color:#fff;text-decoration:none;font-weight:800;font-size:1.05rem;padding:0 8px 26px}.brand-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(135deg,#ffd84d,#ff9d00);color:#101827}.nav-label{color:#71819c;font-size:.68rem;font-weight:800;letter-spacing:.13em;padding:18px 12px 8px}.side-link{display:flex;align-items:center;gap:12px;padding:11px 13px;color:#aebbd0;text-decoration:none;border-radius:11px;margin:3px 0;font-size:.9rem}.side-link:hover,.side-link.active{color:#fff;background:rgba(109,93,252,.2)}.side-link.active{box-shadow:inset 3px 0 #8b7fff}.main{flex:1;min-width:0;margin-left:270px}.topbar{height:72px;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px solid #e7ebf1;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:1020}.content{padding:28px 32px 45px;max-width:1600px;margin:auto}.hero{border-radius:22px;padding:30px;color:#fff;background:radial-gradient(circle at 87% 15%,rgba(57,213,255,.3),transparent 27%),linear-gradient(125deg,#111b34,#263c70 58%,#6557dc);box-shadow:0 18px 45px rgba(31,42,78,.2)}.metric,.panel{background:#fff;border:0;border-radius:17px;box-shadow:0 7px 28px rgba(31,44,68,.07)}.metric{padding:19px;display:flex;align-items:center;gap:14px;height:100%}.metric-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center}.metric-value{font-size:1.55rem;font-weight:800;line-height:1}.metric-label{color:var(--muted);font-size:.78rem;margin-top:5px}.panel{padding:22px}.chart-wrap{height:280px;position:relative}.risk-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #eef1f5}.risk-row:last-child{border:0}.country-avatar{width:38px;height:38px;border-radius:11px;background:#edf1ff;color:#6156dc;display:grid;place-items:center;font-weight:800}.risk-bar{height:7px}.country-table th{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#778398;background:#f8fafc}.country-table td{padding-top:14px;padding-bottom:14px}.search-box{width:min(350px,100%)}.mobile-menu{display:none}.empty-search{display:none}.pulse{width:8px;height:8px;border-radius:50%;background:#2fd280;display:inline-block;box-shadow:0 0 0 5px rgba(47,210,128,.15)}
+        @media(max-width:991px){.sidebar{transform:translateX(-100%);transition:.25s}.sidebar.open{transform:none}.main{margin-left:0}.mobile-menu{display:inline-flex}.content{padding:20px}.topbar{padding:0 20px}.hero{padding:24px}}@media(max-width:575px){.content{padding:14px}.hero{border-radius:16px}.topbar{height:64px}.search-box{width:100%}}
+    </style>
+    @include('components.dark-theme')
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
-        <h1 class="mb-4">Daftar Negara & Pelabuhan</h1>
-        
-        <div class="card p-4 shadow-sm">
-            <h3>Total Negara: {{ count($countries) }}</h3>
-            <h3>Total Pelabuhan: {{ count($ports) }}</h3>
-            
-            <hr>
-            <p class="text-success fw-bold">Berhasil! Halaman master countries sudah terhubung dengan controller.</p>
-        </div>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar">
+        <a class="brand" href="{{ route('countries.index') }}"><span class="brand-icon"><i class="fa-solid fa-boxes-stacked"></i></span><span>SupplyChain<br><small class="fw-normal text-warning">Risk Intelligence</small></span></a>
+        <div class="nav-label">OVERVIEW</div><a class="side-link active" href="{{ route('countries.index') }}"><i class="fa-solid fa-gauge-high"></i>Global Dashboard</a><a class="side-link" href="{{ route('global.map') }}"><i class="fa-solid fa-map-location-dot"></i>Peta Negara & Pelabuhan</a><a class="side-link" href="{{ route('weather.map') }}"><i class="fa-solid fa-cloud-bolt"></i>Cuaca Global</a>
+        <div class="nav-label">MONITORING</div><a class="side-link" href="{{ route('watchlists.index') }}"><i class="fa-solid fa-star"></i>Watchlist Negara</a><a class="side-link" href="{{ route('countries.compare') }}"><i class="fa-solid fa-code-compare"></i>Perbandingan</a><a class="side-link" href="{{ route('risk-scores.index') }}"><i class="fa-solid fa-chart-line"></i>Risk Scores</a><a class="side-link" href="{{ route('ports.index') }}"><i class="fa-solid fa-anchor"></i>Pelabuhan Dunia</a>
+        <div class="nav-label">INTELLIGENCE</div><a class="side-link" href="{{ route('articles.index') }}"><i class="fa-regular fa-newspaper"></i>Artikel Analisis</a><a class="side-link" href="{{ route('sentiments.index') }}"><i class="fa-solid fa-brain"></i>Sentimen Berita</a>
+        @if(auth()->user()?->isAdmin())<div class="nav-label">SYSTEM</div><a class="side-link" href="{{ route('admin.dashboard') }}"><i class="fa-solid fa-shield-halved"></i>Admin Panel</a>@endif
+    </aside>
+
+    <div class="main">
+        <header class="topbar"><div class="d-flex align-items-center gap-3"><button class="btn btn-light mobile-menu" id="menuButton"><i class="fa-solid fa-bars"></i></button><div><div class="fw-bold">Global Risk Dashboard</div><small class="text-muted"><span class="pulse me-2"></span>Monitoring system online</small></div></div><div class="d-flex align-items-center gap-3"><span class="d-none d-md-inline text-muted small">{{ auth()->user()?->name ?? 'Guest' }}</span>@auth<form method="POST" action="{{ route('logout') }}">@csrf<button class="btn btn-light btn-sm"><i class="fa-solid fa-right-from-bracket"></i></button></form>@else<a href="{{ route('login') }}" class="btn btn-dark btn-sm">Login</a>@endauth</div></header>
+        <main class="content">
+            @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif @if(session('error'))<div class="alert alert-warning">{{ session('error') }}</div>@endif
+            <section class="hero mb-4"><div class="row align-items-center g-4"><div class="col-lg-8"><span class="badge rounded-pill bg-warning text-dark mb-3"><i class="fa-solid fa-satellite-dish me-1"></i>GLOBAL MONITORING</span><h1 class="display-6 fw-bold mb-2">Supply Chain Risk Intelligence</h1><p class="text-white-50 mb-0">Pantau risiko ekonomi, cuaca, kurs, berita, dan pelabuhan seluruh dunia dalam satu pusat keputusan.</p></div><div class="col-lg-4 text-lg-end"><a href="{{ route('global.map') }}" class="btn btn-light fw-semibold me-2"><i class="fa-solid fa-map me-1"></i>Buka Peta</a><a href="{{ route('countries.compare') }}" class="btn btn-outline-light"><i class="fa-solid fa-scale-balanced me-1"></i>Bandingkan</a></div></div></section>
+            <section class="row g-3 mb-4"><div class="col-6 col-xl-3"><div class="metric"><span class="metric-icon bg-primary-subtle text-primary"><i class="fa-solid fa-earth-asia"></i></span><div><div class="metric-value">{{ number_format($dashboardStats['countries']) }}</div><div class="metric-label">Negara Terpantau</div></div></div></div><div class="col-6 col-xl-3"><div class="metric"><span class="metric-icon bg-info-subtle text-info"><i class="fa-solid fa-anchor"></i></span><div><div class="metric-value">{{ number_format($dashboardStats['ports']) }}</div><div class="metric-label">Pelabuhan Resmi</div></div></div></div><div class="col-6 col-xl-3"><div class="metric"><span class="metric-icon bg-warning-subtle text-warning"><i class="fa-solid fa-chart-simple"></i></span><div><div class="metric-value">{{ $dashboardStats['averageRisk'] }}</div><div class="metric-label">Rata-rata Risiko</div></div></div></div><div class="col-6 col-xl-3"><div class="metric"><span class="metric-icon bg-danger-subtle text-danger"><i class="fa-solid fa-triangle-exclamation"></i></span><div><div class="metric-value">{{ $dashboardStats['highRisk'] }}</div><div class="metric-label">Risiko Tinggi</div></div></div></div></section>
+            <section class="row g-4 mb-4"><div class="col-xl-5"><div class="panel h-100"><div class="d-flex justify-content-between"><div><h2 class="h5 fw-bold mb-1">Distribusi Risiko Global</h2><p class="small text-muted">Klasifikasi 192 negara</p></div><span class="badge text-bg-light border align-self-start">Weighted Model</span></div><div class="chart-wrap"><canvas id="riskChart"></canvas></div></div></div><div class="col-xl-7"><div class="panel h-100"><div class="d-flex justify-content-between align-items-center mb-2"><div><h2 class="h5 fw-bold mb-1">Negara Risiko Tertinggi</h2><p class="small text-muted mb-0">Prioritas mitigasi rantai pasok</p></div><a href="{{ route('risk-scores.index') }}" class="btn btn-sm btn-light">Lihat semua</a></div>@foreach($topRiskCountries as $country)@php $score=(float)($country->riskScore?->total_risk_score??0);$color=$score>=70?'danger':($score>=40?'warning':'success');@endphp<div class="risk-row"><div class="country-avatar">{{ $country->country_code }}</div><div class="flex-grow-1"><div class="d-flex justify-content-between mb-1"><a class="text-dark text-decoration-none fw-semibold" href="{{ route('countries.dashboard',$country) }}">{{ $country->country_name }}</a><b>{{ number_format($score,1) }}</b></div><div class="progress risk-bar"><div class="progress-bar bg-{{ $color }}" style="width:{{ $score }}%"></div></div></div><span class="badge text-bg-{{ $color }}">{{ $country->riskScore?->risk_level }}</span></div>@endforeach</div></div></section>
+            <section class="panel p-0 overflow-hidden"><div class="p-4 d-flex flex-wrap justify-content-between align-items-center gap-3"><div><h2 class="h5 fw-bold mb-1">Monitoring Seluruh Negara</h2><p class="text-muted small mb-0">Klik negara untuk membuka analitik lengkap</p></div><div class="input-group search-box"><span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span><input id="countrySearch" class="form-control border-start-0" placeholder="Cari negara atau kode ISO..."></div></div><div class="table-responsive"><table class="table table-hover align-middle mb-0 country-table"><thead><tr><th class="ps-4">Negara</th><th>Region</th><th>Populasi</th><th>Skor Risiko</th><th>Level</th><th class="text-end pe-4">Aksi</th></tr></thead><tbody id="countryRows">@foreach($countries as $country)@php $score=(float)($country->riskScore?->total_risk_score??0);$color=$score>=70?'danger':($score>=40?'warning':'success');@endphp<tr class="country-row" data-search="{{ strtolower($country->country_name.' '.$country->country_code.' '.$country->region) }}"><td class="ps-4"><div class="d-flex align-items-center gap-3"><div class="country-avatar">{{ $country->country_code }}</div><div><a class="fw-bold text-dark text-decoration-none" href="{{ route('countries.dashboard',$country) }}">{{ $country->country_name }}</a><small class="d-block text-muted">{{ $country->capital ?? 'â€”' }}</small></div></div></td><td>{{ $country->region ?? 'â€”' }}</td><td>{{ $country->population ? number_format($country->population) : 'â€”' }}</td><td style="min-width:150px"><div class="d-flex justify-content-between small mb-1"><b>{{ number_format($score,1) }}</b><span>/100</span></div><div class="progress risk-bar"><div class="progress-bar bg-{{ $color }}" style="width:{{ $score }}%"></div></div></td><td><span class="badge text-bg-{{ $color }} rounded-pill px-3 py-2">{{ $country->riskScore?->risk_level ?? 'Belum dihitung' }}</span></td><td class="text-end pe-4 text-nowrap"><a href="{{ route('countries.news',$country) }}" class="btn btn-sm btn-light" title="Berita"><i class="fa-regular fa-newspaper"></i></a><a href="{{ route('countries.dashboard',$country) }}" class="btn btn-sm btn-primary" title="Dashboard"><i class="fa-solid fa-arrow-right"></i></a></td></tr>@endforeach</tbody></table></div><div id="emptySearch" class="empty-search text-center p-5 text-muted">Negara tidak ditemukan.</div></section>
+        </main>
     </div>
-</body>
-</html>
+</div>
+<script>
+    new Chart(document.getElementById('riskChart'),{type:'doughnut',data:{labels:['Low Risk','Medium Risk','High Risk'],datasets:[{data:@json(array_values($riskDistribution)),backgroundColor:['#20b86b','#f4b740','#ef4c5c'],borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:20}}}}});
+    document.getElementById('countrySearch').addEventListener('input',function(){const q=this.value.toLowerCase().trim();let shown=0;document.querySelectorAll('.country-row').forEach(row=>{const visible=row.dataset.search.includes(q);row.classList.toggle('d-none',!visible);if(visible)shown++});document.getElementById('emptySearch').style.display=shown?'none':'block'});document.getElementById('menuButton').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+    document.querySelectorAll('.country-avatar').forEach(avatar => {
+        const code = avatar.textContent.trim().toLowerCase();
+        if (code.length !== 2) return;
+        const fallback = avatar.textContent;
+        const image = new Image();
+        image.src = `https://flagcdn.com/w80/${code}.png`;
+        image.srcset = `https://flagcdn.com/w160/${code}.png 2x`;
+        image.alt = `Bendera ${code.toUpperCase()}`;
+        image.loading = 'lazy';
+        image.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:8px';
+        image.onerror = () => { avatar.textContent = fallback; };
+        avatar.textContent = '';
+        avatar.style.overflow = 'hidden';
+        avatar.style.border = '1px solid #dfe5ee';
+        avatar.appendChild(image);
+    });
+</script>
+</body></html>

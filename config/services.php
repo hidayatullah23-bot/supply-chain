@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'gnews' => ['key' => env('GNEWS_API_KEY')],
+    'rest_countries' => ['key' => env('REST_COUNTRIES_API_KEY')],
+    'world_ports' => [
+        'url' => env('WORLD_PORT_INDEX_URL', 'https://arcgis.netl.doe.gov/server/rest/services/Hosted/CCS_EJ_SJ_Data/FeatureServer/17'),
+        'verify_ssl' => env('WORLD_PORT_VERIFY_SSL', true),
+    ],
+
 ];

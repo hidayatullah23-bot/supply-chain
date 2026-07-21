@@ -7,12 +7,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @include('components.dark-theme')
 </head>
 <body class="bg-light">
     <div class="container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>💱 Currency Impact & Trend Dashboard</h2>
-            <a href="/countries/{{ $countryData->id }}/dashboard" class="btn btn-secondary">← Kembali ke Dashboard Utama</a>
+            <h2>ðŸ’± Currency Impact & Trend Dashboard</h2>
+            <a href="{{ route('countries.dashboard',$countryData) }}" class="btn btn-secondary">â† Kembali ke Dashboard Utama</a>
         </div>
 
         <div class="card shadow-sm p-4 mb-4">

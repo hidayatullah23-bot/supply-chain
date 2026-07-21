@@ -5,21 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Supplier - Supply Chain</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @include('components.dark-theme')
 </head>
 <body class="bg-gray-100">
 
 <!-- MENU NAVIGASI UTAMA -->
 <nav class="bg-slate-900 p-4 text-white shadow mb-8">
     <div class="max-w-7xl mx-auto flex gap-6 font-medium">
-        <a href="{{ route('countries.index') }}" class="hover:text-blue-400 transition pb-1">🌍 Data Negara</a>
-        <a href="{{ route('suppliers.index') }}" class="text-blue-400 border-b-2 border-blue-400 pb-1">🏭 Data Supplier</a>
-        <a href="{{ route('warehouses.index') }}" class="hover:text-blue-400 transition pb-1">🏠 Data Gudang</a>
+        <a href="{{ route('countries.index') }}" class="hover:text-blue-400 transition pb-1">ðŸŒ Data Negara</a>
+        <a href="{{ route('suppliers.index') }}" class="text-blue-400 border-b-2 border-blue-400 pb-1">ðŸ­ Data Supplier</a>
+        <a href="{{ route('warehouses.index') }}" class="hover:text-blue-400 transition pb-1">ðŸ  Data Gudang</a>
     </div>
 </nav>
 
 <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md mb-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">🏭 Daftar Pemasok (Suppliers)</h1>
+        <h1 class="text-2xl font-bold text-gray-800">ðŸ­ Daftar Pemasok (Suppliers)</h1>
     </div>
 
     @if(session('success'))
@@ -78,7 +79,7 @@
                     <td class="py-3 px-4 border font-mono text-gray-600">{{ $supplier->email }}</td>
                     <td class="py-3 px-4 border">
                         <span class="bg-blue-50 text-blue-800 text-xs px-2.5 py-1 rounded font-medium">
-                            🌍 {{ $supplier->country->country_name ?? 'Tidak Diketahui' }}
+                            ðŸŒ {{ $supplier->country->country_name ?? 'Tidak Diketahui' }}
                         </span>
                     </td>
                     <td class="py-3 px-4 border">

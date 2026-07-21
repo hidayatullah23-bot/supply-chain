@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Gudang - Supply Chain</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @include('components.dark-theme')
 </head>
 <body class="bg-gray-100">
 
 <!-- MENU NAVIGASI UTAMA -->
 <nav class="bg-slate-900 p-4 text-white shadow mb-8">
     <div class="max-w-7xl mx-auto flex gap-6 font-medium">
-        <a href="{{ route('countries.index') }}" class="hover:text-blue-400 transition pb-1">🌍 Data Negara</a>
-        <a href="{{ route('suppliers.index') }}" class="hover:text-blue-400 transition pb-1">🏭 Data Supplier</a>
-        <a href="{{ route('warehouses.index') }}" class="text-blue-400 border-b-2 border-blue-400 pb-1">🏠 Data Gudang</a>
+        <a href="{{ route('countries.index') }}" class="hover:text-blue-400 transition pb-1">ðŸŒ Data Negara</a>
+        <a href="{{ route('suppliers.index') }}" class="hover:text-blue-400 transition pb-1">ðŸ­ Data Supplier</a>
+        <a href="{{ route('warehouses.index') }}" class="text-blue-400 border-b-2 border-blue-400 pb-1">ðŸ  Data Gudang</a>
     </div>
 </nav>
 
 <!-- KONTEN UTAMA -->
 <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md mb-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-xl font-bold text-gray-800">➕ Tambah Gudang Baru</h1>
+        <h1 class="text-xl font-bold text-gray-800">âž• Tambah Gudang Baru</h1>
         <a href="{{ route('warehouses.index') }}" class="text-gray-600 hover:underline text-sm">Kembali</a>
     </div>
 
@@ -63,7 +64,7 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Kapasitas Gudang (m³) *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Kapasitas Gudang (mÂ³) *</label>
                 <input type="number" name="capacity_m3" value="{{ old('capacity_m3') }}" placeholder="Contoh: 5000" class="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
             </div>
         </div>

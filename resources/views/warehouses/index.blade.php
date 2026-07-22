@@ -1,130 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Gudang - Supply Chain</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    @include('components.dark-theme')
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Global Warehouse Network | SupplyChain</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root{--page:#07111f;--side:#091525;--panel:#101d31;--panel2:#14243c;--line:#263850;--ink:#f4f8ff;--muted:#8fa0b8;--violet:#7868ff;--cyan:#22d3ee}*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,sans-serif}.app{display:flex;min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:270px;padding:26px 16px;background:linear-gradient(180deg,#07111f,#0b1728);border-right:1px solid rgba(148,163,184,.13);overflow:auto;z-index:10}.brand{display:flex;align-items:center;gap:11px;padding:0 10px 27px;text-decoration:none;color:#fff;font-weight:800}.brand-icon{width:39px;height:39px;display:grid;place-items:center;border-radius:12px;color:#101827;background:linear-gradient(135deg,#ffd84d,#ff9d00);box-shadow:0 8px 24px #ffb0002d}.brand small{display:block;color:#fbbf24;font-size:.61rem;letter-spacing:.1em;margin-top:5px}.nav-label{color:#60718b;font-size:.65rem;font-weight:800;letter-spacing:.13em;padding:17px 12px 7px}.side-link{display:flex;align-items:center;gap:12px;padding:11px 13px;color:#aab8cb;text-decoration:none;border-radius:11px;margin:3px 0;font-size:.82rem;border:1px solid transparent}.side-link i{width:19px;text-align:center}.side-link:hover{color:#fff;background:#ffffff0c}.side-link.active{color:#fff;background:linear-gradient(90deg,#7868ff3f,#7868ff19);border-color:#8b7fff29;position:relative}.side-link.active:before{content:"";position:absolute;left:-16px;width:3px;height:22px;background:#8b7fff;border-radius:0 4px 4px 0}.side-status{margin:26px 5px 0;padding:13px;border:1px solid #263850;border-radius:13px;font-size:.68rem;color:#91a0b5}.side-status b{display:block;color:#dce7f8;margin-bottom:5px}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 0 4px #34d3991c;margin-right:7px}.main{margin-left:270px;min-width:0;flex:1}.topbar{height:78px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid var(--line);background:#0b1728e8;backdrop-filter:blur(12px);position:sticky;top:0;z-index:8}.kicker{color:#71839e;font-size:.65rem;letter-spacing:.12em;font-weight:800}.top-title{font-size:1rem;font-weight:800}.live{padding:8px 11px;border:1px solid var(--line);border-radius:10px;color:#91a0b5;font-size:.7rem}.content{max-width:1560px;margin:auto;padding:28px 32px 45px}.hero{position:relative;overflow:hidden;border:1px solid #365079;border-radius:22px;padding:31px 33px;background:radial-gradient(circle at 84% 20%,#22d3ee2a,transparent 25%),linear-gradient(120deg,#12213a,#1d3968 62%,#4f46c8);box-shadow:0 18px 45px #0003}.hero:after{content:"";position:absolute;width:270px;height:270px;border:1px solid #ffffff12;border-radius:50%;right:-55px;top:-105px;box-shadow:0 0 0 40px #ffffff07,0 0 0 80px #ffffff04}.hero>*{position:relative;z-index:1}.hero-tag{font-size:.65rem;font-weight:800;letter-spacing:.1em;color:#a5f3fc}.hero h1{font-size:2.05rem;letter-spacing:-.035em;margin:10px 0}.hero p{color:#aebdd0;max-width:680px;font-size:.83rem;line-height:1.7;margin:0}.btn-main{border:0;background:#fff;color:#111b2e;font-weight:800;padding:11px 16px;border-radius:10px;font-size:.78rem;text-decoration:none;display:inline-flex;align-items:center;gap:8px}.metrics{margin-top:20px}.metric,.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px}.metric{height:100%;padding:18px;display:flex;align-items:center;gap:13px;transition:.2s}.metric:hover{transform:translateY(-2px);border-color:#546b8c}.metric-icon{width:44px;height:44px;border-radius:13px;display:grid;place-items:center}.metric-value{font-size:1.4rem;font-weight:800;letter-spacing:-.03em}.metric-label{font-size:.68rem;color:var(--muted);margin-top:4px}.panel{padding:22px}.panel-title{font-size:.93rem;font-weight:800;margin:0}.panel-sub{font-size:.69rem;color:var(--muted);margin-top:5px}.network-map{height:247px;position:relative;overflow:hidden;background:radial-gradient(circle at 58% 50%,#1c3f6850,transparent 43%),#0b1728;border-radius:13px;margin-top:18px;border:1px solid #263850}.network-map:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#94a3b80c 1px,transparent 1px),linear-gradient(90deg,#94a3b80c 1px,transparent 1px);background-size:28px 28px}.world{position:absolute;inset:19px 36px;opacity:.28;background:linear-gradient(135deg,#4d80b9,#234d7b);clip-path:polygon(2% 28%,12% 17%,25% 23%,32% 14%,44% 20%,49% 32%,57% 24%,72% 18%,88% 26%,98% 40%,92% 51%,79% 49%,72% 65%,64% 58%,57% 78%,48% 67%,43% 44%,31% 48%,24% 71%,15% 59%,7% 62%,0 48%)}.map-node{position:absolute;width:9px;height:9px;background:#22d3ee;border-radius:50%;box-shadow:0 0 0 5px #22d3ee19,0 0 13px #22d3ee}.map-node:after{content:attr(data-code);position:absolute;left:13px;top:-6px;color:#d9f8ff;font-size:.58rem;font-weight:800}.mn1{left:26%;top:42%}.mn2{left:47%;top:31%}.mn3{left:55%;top:52%}.mn4{left:75%;top:45%}.mn5{left:83%;top:66%}.route-line{position:absolute;height:1px;background:linear-gradient(90deg,#22d3ee80,#7868ff80);transform-origin:left}.rl1{width:29%;left:26%;top:43%;transform:rotate(-10deg)}.rl2{width:29%;left:47%;top:32%;transform:rotate(27deg)}.rl3{width:28%;left:55%;top:53%;transform:rotate(-13deg)}.chart-box{height:247px;margin-top:18px}.table-panel{margin-top:22px;padding:0;overflow:hidden}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:21px 23px;border-bottom:1px solid var(--line)}.search{display:flex;align-items:center;width:min(330px,100%);height:40px;background:#0a1627;border:1px solid #30435f;border-radius:10px}.search i{width:42px;text-align:center;color:#667892}.search input{height:100%;min-width:0;flex:1;background:transparent;border:0;outline:0;color:#fff;font-size:.75rem;padding-right:12px}.search input::placeholder{color:#64748b}.table{--bs-table-bg:transparent;--bs-table-color:#dce5f2;--bs-table-border-color:#24364e;--bs-table-hover-bg:#15263e;--bs-table-hover-color:#fff;margin:0}.table thead th{padding:13px 18px;background:#14243c;color:#8393aa;border:0;font-size:.62rem;letter-spacing:.07em;text-transform:uppercase}.table td{padding:15px 18px;font-size:.75rem}.warehouse-name{font-weight:800;color:#f4f7fc}.warehouse-code{font-size:.62rem;color:#8391a6;margin-top:3px}.flag{width:31px;height:31px;border-radius:8px;object-fit:cover;border:1px solid #ffffff17}.capacity{min-width:135px}.capacity-bar{height:5px;background:#263850;border-radius:5px;margin-top:6px;overflow:hidden}.capacity-bar i{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#7868ff);border-radius:5px}.status{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:99px;font-size:.63rem;font-weight:800}.status.active{background:#10b98118;color:#6ee7b7}.status.inactive{background:#ef444418;color:#fca5a5}.actions{display:flex;justify-content:flex-end;gap:6px}.icon-btn{width:32px;height:32px;display:grid;place-items:center;border:1px solid #30435f;border-radius:8px;background:#17263d;color:#b8c5d8;text-decoration:none}.icon-btn:hover{color:#fff;border-color:#7868ff}.delete:hover{color:#fca5a5;border-color:#ef4444}.empty{padding:55px 20px;text-align:center;color:#8290a5}.empty i{font-size:2rem;color:#52637b;margin-bottom:12px}.pagination-wrap{padding:15px 22px;border-top:1px solid var(--line)}.pagination{margin:0;--bs-pagination-bg:#14243c;--bs-pagination-border-color:#2c405c;--bs-pagination-color:#a9b8cd;--bs-pagination-hover-bg:#1b2d48;--bs-pagination-hover-color:#fff;--bs-pagination-active-bg:#6757ef;--bs-pagination-active-border-color:#6757ef}.alert{font-size:.76rem;border-radius:12px}.mobile-menu{display:none}
+        @media(max-width:991px){.sidebar{transform:translateX(-100%);transition:.25s}.sidebar.open{transform:none;box-shadow:30px 0 80px #000b}.main{margin-left:0}.mobile-menu{display:inline-grid}.content{padding:20px}.topbar{padding:0 20px}.hero{padding:25px}}@media(max-width:575px){.content{padding:14px}.hero h1{font-size:1.55rem}.toolbar{align-items:flex-start;flex-direction:column}.search{width:100%}.topbar{height:68px}}
+    </style>
 </head>
-<body class="bg-gray-100">
-
-<!-- MENU NAVIGASI UTAMA -->
-<nav class="bg-slate-900 p-4 text-white shadow mb-8">
-    <div class="max-w-7xl mx-auto flex gap-6 font-medium">
-        <a href="{{ route('countries.index') }}" class="hover:text-blue-400 transition pb-1">ðŸŒ Data Negara</a>
-        <a href="{{ route('suppliers.index') }}" class="hover:text-blue-400 transition pb-1">ðŸ­ Data Supplier</a>
-        <a href="{{ route('warehouses.index') }}" class="text-blue-400 border-b-2 border-blue-400 pb-1">ðŸ  Data Gudang</a>
-    </div>
-</nav>
-
-<!-- KONTEN UTAMA -->
-<div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md mb-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">ðŸ  Daftar Gudang (Warehouses)</h1>
-    </div>
-
-    <!-- NOTIFIKASI SUKSES -->
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <!-- TOMBOL TAMBAH & FORM PENCARIAN -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <!-- Tombol Tambah -->
-        <a href="{{ route('warehouses.create') }}">
-            <button class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition">
-                + Tambah Gudang
-            </button>
-        </a>
-
-        <!-- Form Cari -->
-        <form action="{{ route('warehouses.index') }}" method="GET" class="flex gap-2 w-full md:w-auto">
-            <input 
-                type="text" 
-                name="search" 
-                value="{{ $search ?? '' }}" 
-                placeholder="Cari nama gudang, kode, lokasi..." 
-                class="border rounded px-3 py-2 w-full md:w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition">
-                Cari
-            </button>
-            @if(!empty($search))
-                <a href="{{ route('warehouses.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded transition flex items-center">
-                    Reset
-                </a>
-            @endif
-        </form>
-    </div>
-
-    <!-- TABEL GUDANG -->
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200">
-            <thead>
-                <tr class="bg-slate-800 text-white text-left text-sm font-semibold">
-                    <th class="py-3 px-4 border">No</th>
-                    <th class="py-3 px-4 border">Kode Gudang</th>
-                    <th class="py-3 px-4 border">Nama Gudang</th>
-                    <th class="py-3 px-4 border">Lokasi Negara</th>
-                    <th class="py-3 px-4 border text-right">Kapasitas (mÂ³)</th>
-                    <th class="py-3 px-4 border text-center">Status</th>
-                    <th class="py-3 px-4 border text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="text-gray-700 text-sm">
-                @forelse($warehouses as $index => $warehouse)
-                <tr class="hover:bg-gray-50 transition border-b">
-                    <td class="py-3 px-4 border font-medium">
-                        {{ $warehouses->firstItem() + $index }}
-                    </td>
-                    <td class="py-3 px-4 border">
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-mono font-semibold">{{ $warehouse->warehouse_code }}</span>
-                    </td>
-                    <td class="py-3 px-4 border font-semibold text-gray-900">{{ $warehouse->warehouse_name }}</td>
-                    <td class="py-3 px-4 border">
-                        <span class="bg-blue-50 text-blue-800 text-xs px-2.5 py-1 rounded font-medium">
-                            ðŸŒ {{ $warehouse->country->country_name ?? 'Tidak Diketahui' }}
-                        </span>
-                    </td>
-                    <td class="py-3 px-4 border text-right font-mono font-semibold text-gray-800">{{ number_format($warehouse->capacity_m3) }} mÂ³</td>
-                    <td class="py-3 px-4 border text-center">
-                        @if($warehouse->status == 'active')
-                            <span class="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full font-medium">Active</span>
-                        @else
-                            <span class="bg-red-100 text-red-800 text-xs px-2.5 py-0.5 rounded-full font-medium">Inactive</span>
-                        @endif
-                    </td>
-                    <td class="py-3 px-4 border text-center whitespace-nowrap">
-                        <!-- TOMBOL EDIT -->
-                        <a href="{{ route('warehouses.edit', $warehouse->id) }}">
-                            <button class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-1 rounded mr-1 transition">Edit</button>
-                        </a>
-                
-                        <!-- TOMBOL HAPUS -->
-                        <form action="{{ route('warehouses.destroy', $warehouse->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus gudang ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded transition">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="7" class="py-6 text-center text-gray-500">Data gudang tidak ditemukan.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    <!-- PAGINATION -->
-    <div class="mt-6">
-        {{ $warehouses->links() }}
-    </div>
-</div>
-
-</body>
-</html>
+<body><div class="app">
+<aside class="sidebar" id="sidebar">
+    <a class="brand" href="{{ route('countries.index') }}"><span class="brand-icon"><i class="fa-solid fa-boxes-stacked"></i></span><span>SupplyChain<small>RISK INTELLIGENCE</small></span></a>
+    <div class="nav-label">OVERVIEW</div><a class="side-link" href="{{ route('countries.index') }}"><i class="fa-solid fa-gauge-high"></i>Global Dashboard</a><a class="side-link" href="{{ route('global.map') }}"><i class="fa-solid fa-earth-asia"></i>Global Network Map</a>
+    <div class="nav-label">OPERATIONS</div><a class="side-link" href="{{ route('ports.index') }}"><i class="fa-solid fa-anchor"></i>Pelabuhan Dunia</a><a class="side-link" href="{{ route('suppliers.index') }}"><i class="fa-solid fa-truck-field"></i>Direktori Supplier</a><a class="side-link active" href="{{ route('warehouses.index') }}"><i class="fa-solid fa-warehouse"></i>Manajemen Gudang</a>
+    <div class="nav-label">INTELLIGENCE</div><a class="side-link" href="{{ route('risk-scores.index') }}"><i class="fa-solid fa-chart-line"></i>Risk Scores</a><a class="side-link" href="{{ route('countries.compare') }}"><i class="fa-solid fa-code-compare"></i>Perbandingan Negara</a>
+    <div class="side-status"><b><span class="dot"></span>Network operational</b>Global warehouse nodes synchronized</div>
+</aside>
+<div class="main">
+    <header class="topbar"><div class="d-flex align-items-center gap-3"><button class="icon-btn mobile-menu" id="menuButton"><i class="fa-solid fa-bars"></i></button><div><div class="kicker">GLOBAL OPERATIONS / WAREHOUSE</div><div class="top-title">Warehouse Network Command</div></div></div><div class="live"><span class="dot"></span>Live network</div></header>
+    <main class="content">
+        @if(session('success'))<div class="alert alert-success border-0">{{ session('success') }}</div>@endif
+        <section class="hero"><div class="row align-items-center g-4"><div class="col-lg-8"><div class="hero-tag"><i class="fa-solid fa-satellite-dish me-2"></i>GLOBAL WAREHOUSE CONTROL</div><h1>One network. Every warehouse. Full visibility.</h1><p>Pantau kapasitas, lokasi, dan kesiapan operasional seluruh pusat distribusi dalam satu jaringan logistik global.</p></div><div class="col-lg-4 text-lg-end"><a class="btn-main" href="{{ route('warehouses.create') }}"><i class="fa-solid fa-plus"></i>Tambah Gudang</a></div></div></section>
+        <section class="row g-3 metrics">
+            <div class="col-6 col-xl-3"><div class="metric"><span class="metric-icon bg-primary bg-opacity-10 text-primary"><i class="fa-solid fa-warehouse"></i></span><div><div class="metric-value">{{ number_format($stats['total']) }}</div><div class="metric-label">Global Warehouse Nodes</div></div></div></div>
+            <div class="col-6 col-xl-3"><div class="metric"><span class="metric-icon bg-success bg-opacity-10 text-success"><i class="fa-solid fa-circle-check"></i></span><div><div class="metric-value">{{ number_format($stats['active']) }}</div><div class="metric-label">Operational Facilities</div></div></div></div>
+            <div class="col-6 col-xl-3"><div class="metric"><span class="metric-icon bg-info bg-opacity-10 text-info"><i class="fa-solid fa-cubes-stacked"></i></span><div><div class="metric-value">{{ number_format($stats['capacity']/1000000,2) }}M</div><div class="metric-label">Total Capacity · m³</div></div></div></div>
+            <div class="col-6 col-xl-3"><div class="metric"><span class="metric-icon bg-warning bg-opacity-10 text-warning"><i class="fa-solid fa-earth-americas"></i></span><div><div class="metric-value">{{ number_format($stats['countries']) }}</div><div class="metric-label">Countries Connected</div></div></div></div>
+        </section>
+        <section class="row g-4 mt-0"><div class="col-xl-7"><div class="panel h-100"><div><h2 class="panel-title">Global Distribution Network</h2><div class="panel-sub">Visualisasi simpul gudang lintas wilayah operasional</div></div><div class="network-map"><div class="world"></div><i class="route-line rl1"></i><i class="route-line rl2"></i><i class="route-line rl3"></i><i class="map-node mn1" data-code="LAX"></i><i class="map-node mn2" data-code="RTM"></i><i class="map-node mn3" data-code="DXB"></i><i class="map-node mn4" data-code="SIN"></i><i class="map-node mn5" data-code="SYD"></i></div></div></div><div class="col-xl-5"><div class="panel h-100"><h2 class="panel-title">Regional Footprint</h2><div class="panel-sub">Persebaran fasilitas berdasarkan region</div><div class="chart-box"><canvas id="regionChart"></canvas></div></div></div></section>
+        <section class="panel table-panel"><div class="toolbar"><div><h2 class="panel-title">Warehouse Directory</h2><div class="panel-sub">{{ number_format($stats['total']) }} fasilitas terdaftar dalam jaringan</div></div><form class="search"><i class="fa-solid fa-magnifying-glass"></i><input name="search" value="{{ $search }}" placeholder="Cari gudang, kode, lokasi..."></form></div><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Facility</th><th>Country & Location</th><th>Capacity</th><th>Status</th><th class="text-end">Actions</th></tr></thead><tbody>
+        @forelse($warehouses as $warehouse)<tr><td><div class="warehouse-name">{{ $warehouse->warehouse_name }}</div><div class="warehouse-code">{{ $warehouse->warehouse_code }}</div></td><td><div class="d-flex align-items-center gap-2"><img class="flag" src="https://flagcdn.com/w80/{{ strtolower($warehouse->country?->country_code) }}.png" alt=""><div><b>{{ $warehouse->country?->country_name ?? 'Unknown' }}</b><div class="warehouse-code">{{ $warehouse->location ?: 'Location unavailable' }}</div></div></div></td><td class="capacity"><b>{{ number_format($warehouse->capacity_m3) }} m³</b><div class="capacity-bar"><i style="width:{{ min(100,($warehouse->capacity_m3/350000)*100) }}%"></i></div></td><td><span class="status {{ $warehouse->status }}"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>{{ $warehouse->status === 'active' ? 'Operational' : 'Inactive' }}</span></td><td><div class="actions"><a class="icon-btn" href="{{ route('warehouses.edit',$warehouse) }}" title="Edit"><i class="fa-solid fa-pen"></i></a><form method="POST" action="{{ route('warehouses.destroy',$warehouse) }}" onsubmit="return confirm('Hapus gudang ini dari jaringan?')">@csrf @method('DELETE')<button class="icon-btn delete" title="Hapus"><i class="fa-solid fa-trash"></i></button></form></div></td></tr>
+        @empty<tr><td colspan="5"><div class="empty"><i class="fa-solid fa-warehouse"></i><div class="fw-bold text-white mb-1">Belum ada gudang dalam jaringan</div><div>Tambahkan fasilitas pertama untuk memulai monitoring global.</div></div></td></tr>@endforelse
+        </tbody></table></div>@if($warehouses->hasPages())<div class="pagination-wrap">{{ $warehouses->links('pagination::bootstrap-5') }}</div>@endif</section>
+    </main>
+</div></div>
+<script>
+new Chart(document.getElementById('regionChart'),{type:'bar',data:{labels:@json($regions->keys()->values()),datasets:[{data:@json($regions->values()),backgroundColor:['#7868ff','#22d3ee','#3b82f6','#fbbf24','#34d399'],borderRadius:7,barThickness:18}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0,color:'#71839a'},grid:{color:'#263850'}},y:{ticks:{color:'#aab8cb'},grid:{display:false}}}}});
+document.getElementById('menuButton').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+</script></body></html>

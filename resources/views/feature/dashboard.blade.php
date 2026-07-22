@@ -24,24 +24,24 @@
                 <a href="{{ route('countries.index') }}" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-gray-800 text-gray-300">
                     <i class="fa-solid fa-earth-asia"></i><span>1. Master Negara</span>
                 </a>
-                <a href="{{ route('feature.show', 'watchlists') }}" class="flex items-center space-x-3 py-2 px-3 rounded {{ $slug == 'watchlists' ? 'bg-gray-800 text-yellow-400' : 'hover:bg-gray-800 text-gray-300' }}">
+                <a href="{{ route('watchlists.index') }}" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-gray-800 text-gray-300">
                     <i class="fa-solid fa-star"></i><span>2. Watchlist Favorit</span>
                 </a>
                 <a href="{{ route('countries.compare') }}" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-gray-800 text-gray-300">
                     <i class="fa-solid fa-right-left"></i><span>3. Perbandingan Negara</span>
                 </a>
-                <a href="{{ route('feature.show', 'ports') }}" class="flex items-center space-x-3 py-2 px-3 rounded {{ $slug == 'ports' ? 'bg-gray-800 text-yellow-400' : 'hover:bg-gray-800 text-gray-300' }}">
+                <a href="{{ route('ports.index') }}" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-gray-800 text-gray-300">
                     <i class="fa-solid fa-anchor"></i><span>4. Data Pelabuhan Dunia</span>
                 </a>
-                <a href="{{ route('feature.show', 'suppliers') }}" class="flex items-center space-x-3 py-2 px-3 rounded {{ $slug == 'suppliers' ? 'bg-gray-800 text-yellow-400' : 'hover:bg-gray-800 text-gray-300' }}">
+                <a href="{{ route('suppliers.index') }}" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-gray-800 text-gray-300">
                     <i class="fa-solid fa-truck-field"></i><span>5. Direktori Supplier</span>
                 </a>
-                <a href="{{ route('feature.show', 'warehouses') }}" class="flex items-center space-x-3 py-2 px-3 rounded {{ $slug == 'warehouses' ? 'bg-gray-800 text-yellow-400' : 'hover:bg-gray-800 text-gray-300' }}">
+                <a href="{{ route('warehouses.index') }}" class="flex items-center space-x-3 py-2 px-3 rounded hover:bg-gray-800 text-gray-300">
                     <i class="fa-solid fa-warehouse"></i><span>6. Manajemen Gudang</span>
                 </a>
 
                 <div class="px-2 pt-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Analisis Rantai Pasok</div>
-                <a href="{{ route('feature.show', 'risk-scores') }}" class="flex items-center space-x-3 py-2 px-3 rounded {{ $slug == 'risk-scores' ? 'bg-gray-800 text-yellow-400' : 'hover:bg-gray-800 text-gray-300' }}">
+                <a href="{{ route('risk-scores.index') }}" class="flex items-center space-x-3 py-2 px-3 rounded {{ $slug == 'risk-scores' ? 'bg-gray-800 text-yellow-400' : 'hover:bg-gray-800 text-gray-300' }}">
                     <i class="fa-solid fa-chart-line"></i><span>7. Skor Risiko (Risk Scores)</span>
                 </a>
                 

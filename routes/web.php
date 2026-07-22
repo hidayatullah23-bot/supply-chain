@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CountryController::class, 'index']);
@@ -15,6 +16,8 @@ Route::middleware('guest')->group(function(){
     Route::post('/register',[AuthController::class,'register']);
 });
 Route::post('/logout',[AuthController::class,'logout'])->middleware('auth')->name('logout');
+
+Route::resource('warehouses', WarehouseController::class)->except('show');
 
 // Rute Master Negara & Perbandingan
 Route::get('/countries', [CountryController::class, 'index'])->name('countries.index');
@@ -48,12 +51,7 @@ Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(func
     Route::delete('/articles/{article}', [AdminController::class, 'destroyArticle'])->name('articles.destroy');
 });
 
-// Rute Dinamis untuk Dashboard Masing-Masing Fitur (2 sampai 7)
-Route::get('/{slug}', [FeatureController::class, 'index'])
-    ->where('slug', 'ports|suppliers|warehouses|risk-scores|articles|sentiments')
-    ->name('feature.show');
-
-foreach (['ports', 'suppliers', 'warehouses', 'risk-scores', 'articles', 'sentiments'] as $feature) {
+foreach (['ports', 'suppliers', 'risk-scores', 'articles', 'sentiments'] as $feature) {
     Route::get('/'.$feature, [FeatureController::class, 'index'])
         ->defaults('slug', $feature)
         ->name($feature.'.index');

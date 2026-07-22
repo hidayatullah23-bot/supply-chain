@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             SentimentLexiconSeeder::class,
             SupplierSeeder::class,
             WatchlistSeeder::class,
+            WarehouseSeeder::class,
         ]);
     }
 }

@@ -8,13 +8,6 @@ use Illuminate\Http\Request;
 
 class PortController extends Controller
 {
-    // Menampilkan halaman peta pelabuhan dunia
-    public function index()
-    {
-        $ports = Port::all();
-        return view('ports.index', compact('ports'));
-    }
-
     // REST API Endpoint: GET /api/ports
     public function apiPorts(Request $request)
     {

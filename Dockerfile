@@ -7,10 +7,10 @@ RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --opt
 COPY . .
 RUN composer dump-autoload --no-dev --optimize \
     && php artisan package:discover --ansi \
-    && chmod +x railway/init-app.sh railway/run-cron.sh \
+    && chmod +x railway/init-app.sh railway/start-app.sh \
     && chown -R www-data:www-data storage bootstrap/cache
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 EXPOSE 80
-CMD ["apache2-foreground"]
+CMD ["bash", "railway/start-app.sh"]

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+bash railway/init-app.sh
+
 php artisan schedule:work &
 SCHEDULER_PID=$!
 

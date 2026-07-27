@@ -45,7 +45,10 @@ class SyncWorldPorts extends Command
             return self::FAILURE;
         }
         if ($this->option('replace')) {
-            Port::where('source', 'local')->orWhere('port_name', 'like', 'Global Port Terminal #%')->delete();
+            Port::where('source', 'NGA World Port Index')
+                ->orWhere('source', 'local')
+                ->orWhere('port_name', 'like', 'Global Port Terminal #%')
+                ->delete();
         }
         foreach (array_chunk($rows, 500) as $chunk) {
             Port::upsert($chunk, ['port_name', 'country_name'], ['latitude', 'longitude', 'harbor_size', 'source', 'updated_at']);

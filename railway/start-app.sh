@@ -11,4 +11,4 @@ cleanup() {
 }
 trap cleanup EXIT TERM INT
 
-apache2-foreground
+php artisan serve --host=0.0.0.0 --port=80

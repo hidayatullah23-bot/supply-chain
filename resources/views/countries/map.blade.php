@@ -87,8 +87,8 @@
     const portIcon = L.divIcon({ className: '', html: '<div class="port-pin"></div>', iconSize: [12,12], iconAnchor: [6,6] });
 
     Promise.all([
-        fetch('{{ url('/api/countries') }}').then(response => response.json()),
-        fetch('{{ url('/api/ports') }}').then(response => response.json())
+        fetch('/api/countries').then(response => response.json()),
+        fetch('/api/ports').then(response => response.json())
     ]).then(([countryResponse, portResponse]) => {
         const countries = countryResponse.data || [];
         const ports = portResponse.data || [];

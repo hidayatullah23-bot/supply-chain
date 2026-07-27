@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Country;
 use App\Models\Supplier;
-use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 
 class SupplierSeeder extends Seeder
@@ -18,9 +17,6 @@ class SupplierSeeder extends Seeder
             return;
         }
 
-        $faker = Faker::create();
-        $faker->seed(20260727);
-
         // Ambil semua ID negara yang ada di database
         $countryIds = Country::pluck('id')->toArray();
 
@@ -30,15 +26,24 @@ class SupplierSeeder extends Seeder
             return;
         }
 
-        // Generate 50 data supplier palsu berkualitas tinggi
+        $companyPrefixes = ['Nusantara', 'Pacific', 'Global', 'Maritime', 'Continental', 'Summit', 'Atlas', 'Meridian'];
+        $companyTypes = ['Logistics', 'Industries', 'Supply', 'Trading', 'Manufacturing'];
+        $contactFirstNames = ['Andi', 'Siti', 'Budi', 'Maya', 'Rizky', 'Dewi', 'Arif', 'Nadia'];
+        $contactLastNames = ['Pratama', 'Wijaya', 'Santoso', 'Lestari', 'Hidayat', 'Putri'];
+
+        // Generate 50 data supplier deterministik tanpa dependensi development.
         for ($i = Supplier::count(); $i < 50; $i++) {
+            $number = $i + 1;
+
             Supplier::updateOrCreate(['email' => sprintf('supplier%03d@supplychain.test', $i + 1)], [
-                'country_id' => $faker->randomElement($countryIds),
-                'supplier_name' => $faker->company.' '.$faker->randomElement(['Ltd', 'Inc', 'Group', 'Logistics', 'Supply']),
-                'contact_name' => $faker->name,
-                'phone' => $faker->phoneNumber,
-                'address' => $faker->address,
-                'status' => $faker->randomElement(['active', 'inactive']),
+                'country_id' => $countryIds[$i % count($countryIds)],
+                'supplier_name' => $companyPrefixes[$i % count($companyPrefixes)].' '
+                    .$companyTypes[$i % count($companyTypes)].' '.sprintf('%02d', $number),
+                'contact_name' => $contactFirstNames[$i % count($contactFirstNames)].' '
+                    .$contactLastNames[$i % count($contactLastNames)],
+                'phone' => sprintf('+62-21-555-%04d', 1000 + $number),
+                'address' => sprintf('Kawasan Industri Blok %s-%02d', chr(65 + ($i % 26)), $number),
+                'status' => $i % 10 === 0 ? 'inactive' : 'active',
             ]);
         }
     }

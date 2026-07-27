@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Users
-        if (!Schema::hasTable('users')) {
+        if (! Schema::hasTable('users')) {
             Schema::create('users', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
@@ -23,7 +23,7 @@ return new class extends Migration
         }
 
         // 2. Countries
-        if (!Schema::hasTable('countries')) {
+        if (! Schema::hasTable('countries')) {
             Schema::create('countries', function (Blueprint $table) {
                 $table->id();
                 $table->string('country_name');
@@ -35,7 +35,7 @@ return new class extends Migration
         }
 
         // 3. Ports
-        if (!Schema::hasTable('ports')) {
+        if (! Schema::hasTable('ports')) {
             Schema::create('ports', function (Blueprint $table) {
                 $table->id();
                 $table->string('port_name');
@@ -48,7 +48,7 @@ return new class extends Migration
         }
 
         // 4. Suppliers
-        if (!Schema::hasTable('suppliers')) {
+        if (! Schema::hasTable('suppliers')) {
             Schema::create('suppliers', function (Blueprint $table) {
                 $table->id();
                 $table->string('supplier_name');
@@ -61,7 +61,7 @@ return new class extends Migration
         }
 
         // 5. Warehouses
-        if (!Schema::hasTable('warehouses')) {
+        if (! Schema::hasTable('warehouses')) {
             Schema::create('warehouses', function (Blueprint $table) {
                 $table->id();
                 $table->string('warehouse_name');
@@ -73,7 +73,7 @@ return new class extends Migration
         }
 
         // 6. Risk Scores
-        if (!Schema::hasTable('risk_scores')) {
+        if (! Schema::hasTable('risk_scores')) {
             Schema::create('risk_scores', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('country_id')->constrained('countries')->onDelete('cascade');
@@ -88,7 +88,7 @@ return new class extends Migration
         }
 
         // 7. Articles
-        if (!Schema::hasTable('articles')) {
+        if (! Schema::hasTable('articles')) {
             Schema::create('articles', function (Blueprint $table) {
                 $table->id();
                 $table->string('title');
@@ -100,7 +100,7 @@ return new class extends Migration
         }
 
         // 8. News Sentiments
-        if (!Schema::hasTable('news_sentiments')) {
+        if (! Schema::hasTable('news_sentiments')) {
             Schema::create('news_sentiments', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('article_id')->constrained('articles')->onDelete('cascade');
@@ -111,7 +111,7 @@ return new class extends Migration
         }
 
         // 9. Watchlists
-        if (!Schema::hasTable('watchlists')) {
+        if (! Schema::hasTable('watchlists')) {
             Schema::create('watchlists', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
@@ -122,7 +122,7 @@ return new class extends Migration
         }
 
         // 10. Shipments
-        if (!Schema::hasTable('shipments')) {
+        if (! Schema::hasTable('shipments')) {
             Schema::create('shipments', function (Blueprint $table) {
                 $table->id();
                 $table->string('tracking_number')->unique();
@@ -135,7 +135,7 @@ return new class extends Migration
         }
 
         // 11. Weather Forecasts
-        if (!Schema::hasTable('weather_forecasts')) {
+        if (! Schema::hasTable('weather_forecasts')) {
             Schema::create('weather_forecasts', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('country_id')->constrained('countries')->onDelete('cascade');
@@ -148,7 +148,7 @@ return new class extends Migration
         }
 
         // 12. Economic Indicators
-        if (!Schema::hasTable('economic_indicators')) {
+        if (! Schema::hasTable('economic_indicators')) {
             Schema::create('economic_indicators', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('country_id')->constrained('countries')->onDelete('cascade');
@@ -160,7 +160,7 @@ return new class extends Migration
         }
 
         // 13. Currency Exchange Rates
-        if (!Schema::hasTable('currency_exchange_rates')) {
+        if (! Schema::hasTable('currency_exchange_rates')) {
             Schema::create('currency_exchange_rates', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('country_id')->constrained('countries')->onDelete('cascade');
@@ -172,7 +172,7 @@ return new class extends Migration
         }
 
         // 14. Disruptions
-        if (!Schema::hasTable('disruptions')) {
+        if (! Schema::hasTable('disruptions')) {
             Schema::create('disruptions', function (Blueprint $table) {
                 $table->id();
                 $table->string('title');
@@ -184,7 +184,7 @@ return new class extends Migration
         }
 
         // 15. Audit Logs
-        if (!Schema::hasTable('audit_logs')) {
+        if (! Schema::hasTable('audit_logs')) {
             Schema::create('audit_logs', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
@@ -195,7 +195,7 @@ return new class extends Migration
         }
 
         // 16. API Logs
-        if (!Schema::hasTable('api_logs')) {
+        if (! Schema::hasTable('api_logs')) {
             Schema::create('api_logs', function (Blueprint $table) {
                 $table->id();
                 $table->string('api_endpoint');
@@ -206,7 +206,7 @@ return new class extends Migration
         }
 
         // 17. Notifications
-        if (!Schema::hasTable('notifications')) {
+        if (! Schema::hasTable('notifications')) {
             Schema::create('notifications', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
@@ -218,7 +218,7 @@ return new class extends Migration
         }
 
         // 18. Reports
-        if (!Schema::hasTable('reports')) {
+        if (! Schema::hasTable('reports')) {
             Schema::create('reports', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
@@ -230,7 +230,7 @@ return new class extends Migration
         }
 
         // 19. Route Optimizations
-        if (!Schema::hasTable('route_optimizations')) {
+        if (! Schema::hasTable('route_optimizations')) {
             Schema::create('route_optimizations', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('start_port_id');
@@ -242,7 +242,7 @@ return new class extends Migration
         }
 
         // 20. System Settings
-        if (!Schema::hasTable('system_settings')) {
+        if (! Schema::hasTable('system_settings')) {
             Schema::create('system_settings', function (Blueprint $table) {
                 $table->id();
                 $table->string('setting_key')->unique();

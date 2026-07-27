@@ -7,14 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 class Country extends Model
 {
     protected $fillable = [
-        'country_name', 
-        'country_code', 
-        'capital', 
-        'currency', 
-        'region', 
-        'population', 
-        'latitude', 
-        'longitude'
+        'country_name',
+        'country_code',
+        'capital',
+        'currency',
+        'region',
+        'languages',
+        'data_source',
+        'is_estimated',
+        'population',
+        'latitude',
+        'longitude',
+    ];
+
+    protected $casts = [
+        'languages' => 'array',
+        'is_estimated' => 'boolean',
     ];
 
     public function newsCache()

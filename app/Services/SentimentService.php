@@ -18,6 +18,7 @@ class SentimentService
             $negativeScore += isset($negative[$word]) ? 1 : 0;
         }
         $status = $positiveScore > $negativeScore ? 'Positive' : ($negativeScore > $positiveScore ? 'Negative' : 'Neutral');
-        return ['status'=>$status, 'positive'=>$positiveScore, 'negative'=>$negativeScore];
+
+        return ['status' => $status, 'positive' => $positiveScore, 'negative' => $negativeScore];
     }
 }

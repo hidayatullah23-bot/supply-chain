@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Watchlist;
 use App\Models\Country;
 use App\Models\User;
+use App\Models\Watchlist;
 use Illuminate\Http\Request;
 
 class WatchlistController extends Controller
@@ -52,7 +52,7 @@ class WatchlistController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'country_id' => 'required|exists:countries,id'
+            'country_id' => 'required|exists:countries,id',
         ]);
 
         $userId = $this->currentUserId();
@@ -61,7 +61,7 @@ class WatchlistController extends Controller
 
         $watchlist = Watchlist::firstOrCreate([
             'user_id' => $userId,
-            'country_id' => $request->country_id
+            'country_id' => $request->country_id,
         ]);
 
         return redirect()->back()->with(
@@ -78,6 +78,7 @@ class WatchlistController extends Controller
     public function destroy($id)
     {
         Watchlist::where('user_id', $this->currentUserId())->findOrFail($id)->delete();
+
         return redirect()->back()->with('success', 'Negara berhasil dihapus dari Watchlist.');
     }
 

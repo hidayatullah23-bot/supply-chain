@@ -15,7 +15,7 @@ class RiskScore extends Model
         'currency_risk',
         'news_sentiment_risk',
         'total_risk_score',
-        'risk_level'
+        'risk_level',
     ];
 
     // Relasi balik ke Model Country

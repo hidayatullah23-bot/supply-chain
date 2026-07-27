@@ -43,6 +43,7 @@ class WarehouseController extends Controller
     public function store(Request $request)
     {
         Warehouse::create($this->validated($request));
+
         return redirect()->route('warehouses.index')->with('success', 'Gudang baru berhasil ditambahkan ke jaringan global.');
     }
 
@@ -54,12 +55,14 @@ class WarehouseController extends Controller
     public function update(Request $request, Warehouse $warehouse)
     {
         $warehouse->update($this->validated($request, $warehouse));
+
         return redirect()->route('warehouses.index')->with('success', 'Data gudang berhasil diperbarui.');
     }
 
     public function destroy(Warehouse $warehouse)
     {
         $warehouse->delete();
+
         return back()->with('success', 'Gudang berhasil dihapus dari jaringan.');
     }
 

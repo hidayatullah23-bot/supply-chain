@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             // Menghubungkan supplier dengan negara asal (Foreign Key)
             $table->foreignId('country_id')->constrained('countries')->onDelete('cascade');
-            
+
             $table->string('supplier_name', 150);
             $table->string('contact_name', 100)->nullable(); // Nama PIC / Narahubung
             $table->string('email', 100)->unique();
@@ -25,6 +25,7 @@ return new class extends Migration
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      */

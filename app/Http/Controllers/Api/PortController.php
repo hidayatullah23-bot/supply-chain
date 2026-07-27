@@ -14,16 +14,16 @@ class PortController extends Controller
         $query = Port::query();
 
         if ($request->has('country')) {
-            $query->where('country_name', 'like', '%' . $request->country . '%');
+            $query->where('country_name', 'like', '%'.$request->country.'%');
         }
 
         if ($request->has('search')) {
-            $query->where('port_name', 'like', '%' . $request->search . '%');
+            $query->where('port_name', 'like', '%'.$request->search.'%');
         }
 
         return response()->json([
             'status' => 'success',
-            'data' => $query->get(['id', 'port_name', 'country_name', 'latitude', 'longitude'])
+            'data' => $query->get(['id', 'port_name', 'country_name', 'latitude', 'longitude']),
         ]);
     }
 }

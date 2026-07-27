@@ -42,6 +42,7 @@ class FeatureController extends Controller
                 ->groupBy('harbor_size')->orderByDesc('total')->limit(6)->pluck('total', 'label');
             $countryCodes = Country::whereIn('country_name', $ports->pluck('country_name')->filter()->unique())
                 ->pluck('country_code', 'country_name');
+
             return view('ports.index', compact('ports', 'stats', 'sizes', 'search', 'countryCodes'));
         }
 
@@ -64,6 +65,7 @@ class FeatureController extends Controller
             ];
             $regions = Supplier::with('country')->get()->groupBy(fn ($supplier) => $supplier->country?->region ?? 'Other')
                 ->map->count()->sortDesc()->take(6);
+
             return view('suppliers.dashboard', compact('suppliers', 'stats', 'regions', 'search'));
         }
 
@@ -76,6 +78,7 @@ class FeatureController extends Controller
                 'positive' => NewsCache::where('sentiment_status', 'Positive')->count(),
                 'negative' => NewsCache::where('sentiment_status', 'Negative')->count(),
             ];
+
             return view('feature.articles', compact('title', 'slug', 'newsItems', 'analysisItems', 'newsStats'));
         }
 

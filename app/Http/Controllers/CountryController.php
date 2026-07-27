@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Country;
-use App\Models\RiskScore;
-use App\Models\Port;
+use App\Models\EconomicIndicator;
 use App\Models\NewsCache;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
+use App\Models\Port;
+use App\Models\RiskScore;
 use App\Services\ExternalIntelligenceService;
-use App\Services\RiskScoringService;
 use App\Services\NewsIntelligenceService;
+use App\Services\RiskScoringService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Throwable;
 
 class CountryController extends Controller
@@ -22,6 +22,7 @@ class CountryController extends Controller
         private RiskScoringService $riskScoring,
         private NewsIntelligenceService $newsIntelligence,
     ) {}
+
     /**
      * Menampilkan Master Dashboard Daftar Negara & Peta Pelabuhan
      */
@@ -50,10 +51,11 @@ class CountryController extends Controller
      */
     public function dashboard($id)
     {
-        $countryData = Country::with(['riskScore','economicIndicators','weatherForecasts','currencyRates','riskHistory'])->findOrFail($id);
+        $countryData = Country::with(['riskScore', 'economicIndicators', 'weatherForecasts', 'currencyRates', 'riskHistory'])->findOrFail($id);
         $latestIndicators = $countryData->economicIndicators->sortByDesc('recorded_year')->unique('indicator_code')->keyBy('indicator_code');
         $weather = $countryData->weatherForecasts->sortByDesc('recorded_at')->first();
-        return view('countries.dashboard', compact('countryData','latestIndicators','weather'));
+
+        return view('countries.dashboard', compact('countryData', 'latestIndicators', 'weather'));
     }
 
     public function sync($id)
@@ -65,9 +67,12 @@ class CountryController extends Controller
             $this->intelligence->syncWeather($country);
             $this->intelligence->syncCurrency($country);
             $this->riskScoring->calculate($country);
-            return back()->with('success','Data REST Countries, World Bank, Open-Meteo, dan kurs berhasil diperbarui.');
+
+            return back()->with('success', 'Data REST Countries, World Bank, Open-Meteo, dan kurs berhasil diperbarui.');
         } catch (Throwable $e) {
-            report($e); return back()->with('error','Sebagian layanan eksternal tidak tersedia. Data cache tetap ditampilkan.');
+            report($e);
+
+            return back()->with('error', 'Sebagian layanan eksternal tidak tersedia. Data cache tetap ditampilkan.');
         }
     }
 
@@ -77,7 +82,7 @@ class CountryController extends Controller
     public function compare(Request $request)
     {
         $countries = Country::with(['riskScore'])->get();
-        
+
         $country1 = null;
         $country2 = null;
 
@@ -86,11 +91,13 @@ class CountryController extends Controller
             $country2 = Country::with(['riskScore'])->find($request->country_id_2);
         }
 
-        $comparison = collect([$country1,$country2])->filter()->mapWithKeys(function($country){
-            $indicators=$country->economicIndicators()->latest('recorded_year')->get()->unique('indicator_code')->keyBy('indicator_code');
-            return [$country->id=>['indicators'=>$indicators,'weather'=>$country->weatherForecasts()->latest('recorded_at')->first(),'rate'=>$country->currencyRates()->latest('recorded_date')->first()]];
+        $comparison = collect([$country1, $country2])->filter()->mapWithKeys(function ($country) {
+            $indicators = $country->economicIndicators()->latest('recorded_year')->get()->unique('indicator_code')->keyBy('indicator_code');
+
+            return [$country->id => ['indicators' => $indicators, 'weather' => $country->weatherForecasts()->latest('recorded_at')->first(), 'rate' => $country->currencyRates()->latest('recorded_date')->first()]];
         });
-        return view('countries.compare', compact('countries', 'country1', 'country2','comparison'));
+
+        return view('countries.compare', compact('countries', 'country1', 'country2', 'comparison'));
     }
 
     /**
@@ -99,13 +106,18 @@ class CountryController extends Controller
     public function currencyChart($id)
     {
         $countryData = Country::findOrFail($id);
-        
-        try { $this->intelligence->syncCurrency($countryData); } catch (Throwable $e) { report($e); }
+
+        try {
+            $this->intelligence->syncCurrency($countryData);
+        } catch (Throwable $e) {
+            report($e);
+        }
         $rates = $countryData->currencyRates()->orderBy('recorded_date')->get();
         $currencyLabels = $rates->pluck('recorded_date')->map->format('d M');
         $currencyValues = $rates->pluck('exchange_rate');
+        $currentRate = $rates->last();
 
-        return view('countries.currency', compact('countryData', 'currencyLabels', 'currencyValues'));
+        return view('countries.currency', compact('countryData', 'currencyLabels', 'currencyValues', 'currentRate'));
     }
 
     /**
@@ -114,6 +126,7 @@ class CountryController extends Controller
     public function exportReport($id)
     {
         $countryData = Country::with(['riskScore'])->findOrFail($id);
+
         return view('countries.report', compact('countryData'));
     }
 
@@ -139,7 +152,7 @@ class CountryController extends Controller
             }
         }
 
-        return $positiveScore > $negativeScore ? "Positive" : ($positiveScore < $negativeScore ? "Negative" : "Neutral");
+        return $positiveScore > $negativeScore ? 'Positive' : ($positiveScore < $negativeScore ? 'Negative' : 'Neutral');
     }
 
     /**
@@ -151,67 +164,78 @@ class CountryController extends Controller
         $this->riskScoring->calculate($country);
 
         // Diubah agar langsung kembali ke halaman daftar negara membawa pesan sukses
-        return redirect()->route('countries.index')->with('success', 'Risk score untuk ' . $country->country_name . ' berhasil dikalkulasi!');
+        return redirect()->route('countries.index')->with('success', 'Risk score untuk '.$country->country_name.' berhasil dikalkulasi!');
     }
 
     /**
      * REST API Endpoints Sesuai Spesifikasi Tugas
      */
     public function apiCountries(Request $request)
-    { 
+    {
         $query = Country::with('riskScore');
         if ($request->filled('search')) {
             $query->where('country_name', 'like', '%'.$request->string('search').'%');
         }
+
         return response()->json(['status' => 'success', 'data' => $query->get()]);
     }
 
-    public function apiRiskScores() 
-    { 
-        return response()->json(['status' => 'success', 'data' => RiskScore::with('country')->get()]); 
+    public function apiRiskScores()
+    {
+        return response()->json(['status' => 'success', 'data' => RiskScore::with('country')->get()]);
     }
 
     public function apiNews(Request $request)
-    { 
+    {
         $query = NewsCache::with('country')->latest();
         if ($request->filled('country_id')) {
             $query->where('country_id', $request->integer('country_id'));
         }
+
         return response()->json(['status' => 'success', 'data' => $query->limit(100)->get()]);
     }
 
     public function weatherMap()
     {
-        return view('countries.weather', ['countries'=>Country::with(['weatherForecasts'=>fn($q)=>$q->latest('recorded_at')->limit(1)])->get()]);
+        return view('countries.weather', ['countries' => Country::with(['weatherForecasts' => fn ($q) => $q->latest('recorded_at')->limit(1)])->get()]);
     }
 
     public function apiAnalytics(Country $country)
     {
-        return response()->json(['status'=>'success','data'=>[
-            'economics'=>$country->economicIndicators()->orderBy('recorded_year')->get()->groupBy('indicator_code'),
-            'currency'=>$country->currencyRates()->orderBy('recorded_date')->get(),
-            'risk'=>$country->riskHistory()->orderBy('created_at')->get(),
-            'weather'=>$country->weatherForecasts()->latest('recorded_at')->first(),
+        return response()->json(['status' => 'success', 'data' => [
+            'economics' => $country->economicIndicators()->orderBy('recorded_year')->get()->groupBy('indicator_code'),
+            'currency' => $country->currencyRates()->orderBy('recorded_date')->get(),
+            'risk' => $country->riskHistory()->orderBy('created_at')->get(),
+            'weather' => $country->weatherForecasts()->latest('recorded_at')->first(),
         ]]);
     }
 
     public function apiWeather(Request $request)
     {
-        return response()->json(['status'=>'success','data'=>Country::with(['weatherForecasts'=>fn($q)=>$q->latest('recorded_at')->limit(1)])->when($request->filled('country_id'),fn($q)=>$q->whereKey($request->integer('country_id')))->get()]);
+        return response()->json(['status' => 'success', 'data' => Country::with(['weatherForecasts' => fn ($q) => $q->latest('recorded_at')->limit(1)])->when($request->filled('country_id'), fn ($q) => $q->whereKey($request->integer('country_id')))->get()]);
     }
 
     public function apiEconomics(Request $request)
     {
-        $query=\App\Models\EconomicIndicator::with('country')->orderBy('recorded_year');
-        if($request->filled('country_id'))$query->where('country_id',$request->integer('country_id'));
-        if($request->filled('indicator'))$query->where('indicator_code',$request->string('indicator'));
-        return response()->json(['status'=>'success','data'=>$query->get()]);
+        $query = EconomicIndicator::with('country')->orderBy('recorded_year');
+        if ($request->filled('country_id')) {
+            $query->where('country_id', $request->integer('country_id'));
+        }
+        if ($request->filled('indicator')) {
+            $query->where('indicator_code', $request->string('indicator'));
+        }
+
+        return response()->json(['status' => 'success', 'data' => $query->get()]);
     }
 
     public function apiSentiments(Request $request)
     {
-        $query=NewsCache::with('country')->latest(); if($request->filled('country_id'))$query->where('country_id',$request->integer('country_id'));
-        return response()->json(['status'=>'success','summary'=>(clone $query)->selectRaw('sentiment_status, count(*) total')->groupBy('sentiment_status')->pluck('total','sentiment_status'),'data'=>$query->limit(100)->get()]);
+        $query = NewsCache::with('country')->latest();
+        if ($request->filled('country_id')) {
+            $query->where('country_id', $request->integer('country_id'));
+        }
+
+        return response()->json(['status' => 'success', 'summary' => (clone $query)->selectRaw('sentiment_status, count(*) total')->groupBy('sentiment_status')->pluck('total', 'sentiment_status'), 'data' => $query->limit(100)->get()]);
     }
 
     public function globalMap()
@@ -249,21 +273,28 @@ class CountryController extends Controller
         }
 
         if (! $data) {
-            return response()->json(['status'=>'error','message'=>'Layanan kurs sedang tidak tersedia dan cache belum tersedia.'], 503);
+            return response()->json(['status' => 'error', 'message' => 'Layanan kurs sedang tidak tersedia dan cache belum tersedia.'], 503);
         }
-        return response()->json(['status'=>'success','source'=>$source,'data'=>$data]);
+
+        return response()->json(['status' => 'success', 'source' => $source, 'data' => $data]);
     }
+
     /**
      * Menampilkan Halaman Berita & Analisis Sentimen Negara
      */
     public function news($id)
     {
         $countryData = Country::findOrFail($id);
-        try { $this->newsIntelligence->sync($countryData); } catch(Throwable $e) { report($e); }
-        $newsList = NewsCache::where('country_id',$id)->latest()->limit(50)->get();
-        $total=max(1,$newsList->count());
-        $sentimentSummary=collect(['Positive','Neutral','Negative'])->mapWithKeys(fn($label)=>[$label=>round($newsList->where('sentiment_status',$label)->count()/$total*100,1)]);
-        $countryOptions = Country::orderBy('country_name')->get(['id','country_name','country_code']);
-        return view('countries.news', compact('countryData', 'newsList','sentimentSummary','countryOptions'));
+        try {
+            $this->newsIntelligence->sync($countryData);
+        } catch (Throwable $e) {
+            report($e);
+        }
+        $newsList = NewsCache::where('country_id', $id)->latest()->limit(50)->get();
+        $total = max(1, $newsList->count());
+        $sentimentSummary = collect(['Positive', 'Neutral', 'Negative'])->mapWithKeys(fn ($label) => [$label => round($newsList->where('sentiment_status', $label)->count() / $total * 100, 1)]);
+        $countryOptions = Country::orderBy('country_name')->get(['id', 'country_name', 'country_code']);
+
+        return view('countries.news', compact('countryData', 'newsList', 'sentimentSummary', 'countryOptions'));
     }
 }

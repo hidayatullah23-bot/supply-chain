@@ -21,13 +21,13 @@ class NewsSentiment extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'country_id', 
-        'title', 
-        'description', 
-        'source_url', 
-        'sentiment_status', 
-        'sentiment_score_positive', 
-        'sentiment_score_negative'
+        'country_id',
+        'title',
+        'description',
+        'source_url',
+        'sentiment_status',
+        'sentiment_score_positive',
+        'sentiment_score_negative',
     ];
 
     /**

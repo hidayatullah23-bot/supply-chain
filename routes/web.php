@@ -1,21 +1,22 @@
 <?php
 
-use App\Http\Controllers\CountryController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\FeatureController;
-use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CountryController;
+use App\Http\Controllers\DisruptionController;
+use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\WatchlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CountryController::class, 'index']);
-Route::middleware('guest')->group(function(){
-    Route::get('/login',[AuthController::class,'showLogin'])->name('login');
-    Route::post('/login',[AuthController::class,'login']);
-    Route::get('/register',[AuthController::class,'showRegister'])->name('register');
-    Route::post('/register',[AuthController::class,'register']);
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
 });
-Route::post('/logout',[AuthController::class,'logout'])->middleware('auth')->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 Route::resource('warehouses', WarehouseController::class)->except('show');
 
@@ -24,6 +25,7 @@ Route::get('/countries', [CountryController::class, 'index'])->name('countries.i
 Route::get('/countries/compare', [CountryController::class, 'compare'])->name('countries.compare');
 Route::get('/global-map', [CountryController::class, 'globalMap'])->name('global.map');
 Route::get('/weather-map', [CountryController::class, 'weatherMap'])->name('weather.map');
+Route::get('/disruptions', [DisruptionController::class, 'index'])->name('disruptions.index');
 Route::get('/countries/{id}', [CountryController::class, 'dashboard'])->name('countries.dashboard');
 Route::post('/countries/{id}/sync', [CountryController::class, 'sync'])->name('countries.sync');
 Route::get('/countries/{id}/news', [CountryController::class, 'news'])->name('countries.news');
@@ -31,14 +33,14 @@ Route::get('/countries/{id}/currency', [CountryController::class, 'currencyChart
 Route::get('/countries/{id}/report', [CountryController::class, 'exportReport'])->name('countries.report');
 Route::post('/countries/{id}/calculate-risk', [CountryController::class, 'calculateRisk']);
 
-Route::middleware('auth')->group(function(){
+Route::middleware('auth')->group(function () {
     Route::get('/watchlists', [WatchlistController::class, 'index'])->name('watchlists.index');
     Route::post('/watchlists', [WatchlistController::class, 'store'])->name('watchlists.store');
     Route::delete('/watchlists/{id}', [WatchlistController::class, 'destroy'])->name('watchlists.destroy');
 });
 
 // Rute Admin Dashboard
-Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(function(){
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
     Route::post('/ports', [AdminController::class, 'storePort'])->name('ports.store');
     Route::put('/ports/{port}', [AdminController::class, 'updatePort'])->name('ports.update');

@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Article; // Sesuaikan dengan nama model artikel Anda (misal: Article / News / Post)
+use App\Models\Article;
+use Illuminate\Database\Seeder; // Sesuaikan dengan nama model artikel Anda (misal: Article / News / Post)
 
 class ArticleSeeder extends Seeder
 {
@@ -14,17 +14,17 @@ class ArticleSeeder extends Seeder
             [
                 'title' => 'Analisis Dampak Krisis Rantai Pasok Global 2026',
                 'content' => 'Kenaikan biaya logistik dan inflasi global memicu perlambatan jalur distribusi utama dunia.',
-                'category' => 'Supply Chain Risk'
+                'category' => 'Supply Chain Risk',
             ],
             [
                 'title' => 'Evaluasi Keamanan Pelabuhan Internasional',
                 'content' => 'Peningkatan volume kargo menuntut digitalisasi manajemen pelabuhan agar terhindar dari bottleneck.',
-                'category' => 'Port Logistics'
+                'category' => 'Port Logistics',
             ],
             [
                 'title' => 'Prediksi Risiko Cuaca Ekstrem Terhadap Jalur Maritim',
                 'content' => 'Faktor cuaca dan kecepatan angin menjadi variabel dominan yang mempengaruhi ketepatan waktu pengiriman.',
-                'category' => 'Weather Impact'
+                'category' => 'Weather Impact',
             ],
         ];
 

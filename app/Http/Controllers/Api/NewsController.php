@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class NewsController extends Controller
 {
@@ -18,10 +18,10 @@ class NewsController extends Controller
         // 1. Ambil data negara berdasarkan ID
         $country = DB::table('countries')->where('id', $country_id)->first();
 
-        if (!$country) {
+        if (! $country) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Negara tidak ditemukan di database lokal.'
+                'message' => 'Negara tidak ditemukan di database lokal.',
             ], 404);
         }
 
@@ -37,17 +37,17 @@ class NewsController extends Controller
             return response()->json([
                 'status' => 'success',
                 'source' => 'cache',
-                'data' => $cachedNews->toArray()
+                'data' => $cachedNews->toArray(),
             ]);
         }
 
         // 3. Jika tidak ada cache, ambil data dari API GNews dengan fallback key aman
         $apiKey = config('services.gnews.key');
-        
-        if (!$apiKey) {
+
+        if (! $apiKey) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'GNews API Key belum dikonfigurasi.'
+                'message' => 'GNews API Key belum dikonfigurasi.',
             ], 500);
         }
 
@@ -55,12 +55,12 @@ class NewsController extends Controller
         $countryName = $country->name ?? $country->country_name ?? $country->nama ?? 'Indonesia';
 
         // Cari berita dengan kata kunci supply chain / logistik yang berkaitan dengan negara tersebut
-        $query = '"supply chain" OR "logistics" AND "' . $countryName . '"';
-        
+        $query = '"supply chain" OR "logistics" AND "'.$countryName.'"';
+
         $response = Http::get('https://gnews.io/api/v4/search', [
             'q' => $query,
             'lang' => 'en',
-            'apikey' => $apiKey
+            'apikey' => $apiKey,
         ]);
 
         // Cek jika request ke GNews gagal
@@ -68,7 +68,7 @@ class NewsController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Gagal mengambil berita dari API GNews.',
-                'error_detail' => $response->json()
+                'error_detail' => $response->json(),
             ], 500);
         }
 
@@ -83,7 +83,7 @@ class NewsController extends Controller
         foreach ($articles as $article) {
             $title = $article['title'];
             $description = $article['description'] ?? '';
-            $textToAnalyze = strtolower($title . ' ' . $description);
+            $textToAnalyze = strtolower($title.' '.$description);
 
             // Hitung skor kata positif dan negatif
             $scorePositive = 0;
@@ -116,8 +116,10 @@ class NewsController extends Controller
                 'sentiment_status' => $sentiment,
                 'sentiment_score_positive' => $scorePositive,
                 'sentiment_score_negative' => $scoreNegative,
+                'data_source' => 'gnews',
+                'is_estimated' => false,
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ];
 
             DB::table('news_cache')->insert($newsData);
@@ -127,7 +129,7 @@ class NewsController extends Controller
         return response()->json([
             'status' => 'success',
             'source' => 'api',
-            'data' => $savedArticles
+            'data' => $savedArticles,
         ]);
     }
 
@@ -137,7 +139,7 @@ class NewsController extends Controller
     public function showNewsPage($country_id)
     {
         // Membuat Request tiruan untuk dikirimkan ke getAnalyzedNews
-        $request = Request::create('/api/news/' . $country_id, 'GET');
+        $request = Request::create('/api/news/'.$country_id, 'GET');
         $response = $this->getAnalyzedNews($request, $country_id);
         $result = json_decode($response->getContent(), true);
 
@@ -154,7 +156,7 @@ class NewsController extends Controller
         return view('countries.show_news', [
             'country' => $country,
             'newsData' => $newsData,
-            'errorMessage' => (isset($result['status']) && $result['status'] === 'error') ? $result['message'] : null
+            'errorMessage' => (isset($result['status']) && $result['status'] === 'error') ? $result['message'] : null,
         ]);
     }
 }

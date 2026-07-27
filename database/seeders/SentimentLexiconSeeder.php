@@ -10,15 +10,15 @@ class SentimentLexiconSeeder extends Seeder
     public function run(): void
     {
         $positives = [
-            'growth', 'increase', 'profit', 'stable', 'improve', 
+            'growth', 'increase', 'profit', 'stable', 'improve',
             'recovery', 'expansion', 'efficient', 'boom', 'surplus',
-            'success', 'positive', 'boost', 'strengthen', 'benefit'
+            'success', 'positive', 'boost', 'strengthen', 'benefit',
         ];
 
         $negatives = [
-            'war', 'crisis', 'inflation', 'delay', 'disaster', 
+            'war', 'crisis', 'inflation', 'delay', 'disaster',
             'conflict', 'strike', 'shortage', 'decrease', 'deficit',
-            'congested', 'protest', 'disruption', 'clash', 'risk'
+            'congested', 'protest', 'disruption', 'clash', 'risk',
         ];
 
         foreach ($positives as $word) {

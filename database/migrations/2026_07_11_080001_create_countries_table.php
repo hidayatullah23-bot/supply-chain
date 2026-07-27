@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('country_name');
-            $table->string('country_code',10)->unique();
+            $table->string('country_code', 10)->unique();
 
             $table->string('currency')->nullable();
             $table->string('region')->nullable();
@@ -20,8 +20,8 @@ return new class extends Migration
 
             $table->bigInteger('population')->nullable();
 
-            $table->decimal('latitude',10,6)->nullable();
-            $table->decimal('longitude',10,6)->nullable();
+            $table->decimal('latitude', 10, 6)->nullable();
+            $table->decimal('longitude', 10, 6)->nullable();
 
             $table->timestamps();
         });

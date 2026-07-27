@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Port;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class PortSeeder extends Seeder
 {
@@ -16,7 +16,7 @@ class PortSeeder extends Seeder
             [
                 'name' => 'Admin Supply Chain',
                 'password' => bcrypt('password123'),
-                'role' => 'admin'
+                'role' => 'admin',
             ]
         );
 

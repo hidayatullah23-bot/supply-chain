@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\NewsController;
+use App\Http\Controllers\DisruptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\NewsController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -26,3 +27,4 @@ Route::get('/countries/{country}/analytics', [CountryController::class, 'apiAnal
 Route::get('/weather', [CountryController::class, 'apiWeather']);
 Route::get('/economics', [CountryController::class, 'apiEconomics']);
 Route::get('/sentiments', [CountryController::class, 'apiSentiments']);
+Route::get('/disruptions', [DisruptionController::class, 'api']);

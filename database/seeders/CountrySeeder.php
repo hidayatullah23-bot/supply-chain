@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Country;
+use Illuminate\Database\Seeder;
 
 class CountrySeeder extends Seeder
 {
@@ -201,7 +201,7 @@ class CountrySeeder extends Seeder
             ['country_name' => 'Vietnam', 'country_code' => 'VN', 'latitude' => 14.0583, 'longitude' => 108.2772],
             ['country_name' => 'Yemen', 'country_code' => 'YE', 'latitude' => 15.5527, 'longitude' => 48.5164],
             ['country_name' => 'Zambia', 'country_code' => 'ZM', 'latitude' => -13.1339, 'longitude' => 27.8493],
-            ['country_name' => 'Zimbabwe', 'country_code' => 'ZW', 'latitude' => -19.0154, 'longitude' => 29.1549]
+            ['country_name' => 'Zimbabwe', 'country_code' => 'ZW', 'latitude' => -19.0154, 'longitude' => 29.1549],
         ];
 
         foreach ($countries as $country) {

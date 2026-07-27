@@ -8,14 +8,15 @@ use App\Models\User;
 use App\Models\Watchlist;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class WatchlistSeeder extends Seeder
 {
     public function run(): void
     {
-        $user = User::updateOrCreate(
+        $user = User::firstOrCreate(
             ['email' => 'admin@supplychain.test'],
-            ['name' => 'Administrator', 'password' => Hash::make('password'), 'role' => 'admin']
+            ['name' => 'Administrator', 'password' => Hash::make((string) (env('ADMIN_DEFAULT_PASSWORD') ?: Str::password(32))), 'role' => 'admin']
         );
 
         $priorityData = [

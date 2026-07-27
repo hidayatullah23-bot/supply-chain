@@ -12,7 +12,10 @@ class NewsCache extends Model
         'country_id', 'title', 'description', 'source_url', 'image_url',
         'sentiment_status', 'sentiment_score_positive',
         'sentiment_score_negative',
+        'data_source', 'is_estimated',
     ];
+
+    protected $casts = ['is_estimated' => 'boolean'];
 
     public function country()
     {

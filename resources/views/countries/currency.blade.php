@@ -19,6 +19,7 @@
         <div class="card shadow-sm p-4 mb-4">
             <h4 class="text-primary mb-3">Tren Perubahan Nilai Tukar: {{ $countryData->country_name }}</h4>
             <p class="text-muted">Grafik ini memantau fluktuasi kurs mata uang secara historis untuk mengantisipasi risiko biaya impor.</p>
+            <div class="mb-3"><span class="badge text-bg-{{ $currentRate?->is_estimated?'secondary':'success' }}">{{ $currentRate?->is_estimated?'Baseline/estimasi':'Data aktual' }}</span> <span class="text-muted small">Sumber: {{ $currentRate?->data_source ?? 'belum tersedia' }} · 1 USD ke {{ $countryData->currency }}</span></div>
             <div style="position: relative; height: 350px; width: 100%;">
                 <canvas id="currencyChart"></canvas>
             </div>
@@ -32,7 +33,7 @@
             data: {
                 labels: @json($currencyLabels),
                 datasets: [{
-                    label: 'Nilai Kurs (Real-time Trend)',
+                    label: '1 USD ke {{ $countryData->currency }}',
                     data: @json($currencyValues),
                     borderColor: 'rgb(75, 192, 192)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
